@@ -1,0 +1,35 @@
+/* ScheduleAppointment.css */
+
+/* Optional: Basic styling for the react-calendar component */
+.react-calendar {
+    width: 100%;
+    max-width: 100%;
+    background: white;
+    border: 1px solid #a0a096;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.125em;
+  }
+  
+  /* Highlight today's tile (optional) */
+  .react-calendar__tile--now {
+    background: #ffff76;
+  }
+  
+  /* Custom style for available days */
+  .available-day {
+    background-color: #d1e7dd !important;  /* Light green background */
+    color: #0f5132 !important;             /* Dark green text */
+    border-radius: 50% !important;         /* Circular shape */
+    font-weight: bold;
+  }
+  
+  /* Optional: Hover effect on available days */
+  .available-day:hover {
+    background-color: #c7dbc1 !important;
+  }
+  
+  /* Optional: Customize tile padding */
+  .react-calendar__tile {
+    padding: 10px !important;
+  }
+  
