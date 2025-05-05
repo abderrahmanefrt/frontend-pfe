@@ -39,6 +39,7 @@ const Home: React.FC = () => {
             <Link to="/login" className="btn btn-outline-light btn-lg">
               Log In
             </Link>
+            
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 interface PrivateRouteProps {
@@ -6,11 +6,18 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute = ({ element }: PrivateRouteProps) => {
- {/* const isAuthenticated = localStorage.getItem("authToken"); // we Replace with our auth logic
+  const { user, loading } = useAuth(); // 👈 maintenant on utilise loading aussi
+  const location = useLocation();
 
-  return isAuthenticated ? element : <Navigate to="/login" />;*/}
-  const { user } = useAuth();
-  return user ? element : <Navigate to="/login" />;
+  if (loading) {
+    return <div>Loading...</div>; // ou un vrai spinner si tu veux
+  }
+
+  if (!user || !user.accessToken) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return element;
 };
 
 export default PrivateRoute;

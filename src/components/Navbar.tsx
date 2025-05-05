@@ -1,21 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-
-interface NavbarProps {  
+interface NavbarProps {
   brand: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ brand }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container-fluid">
-        {/* Brand Name , Logo */}
-        <Link className="navbar-brand" to="/">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div className="container">
+        {/* Brand */}
+        <Link className="navbar-brand fw-bold" to="/">
+          <i className="bi bi-heart-pulse-fill me-2"></i>
           {brand}
         </Link>
 
-        {/* Toggle Button for Mobile */}
+        {/* Mobile Toggle */}
         <button
           className="navbar-toggler"
           type="button"
@@ -28,45 +28,53 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Navbar Links */}
+        {/* Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+
             <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
+              <Link className="nav-link" to="/">Home</Link>
             </li>
+
             <li className="nav-item">
-              <Link className="nav-link" to="/login">
-                Login
-              </Link>
+              <Link className="nav-link" to="/login">Login</Link>
             </li>
+
+
             <li className="nav-item">
-              <Link className="nav-link" to="/about">
-                About
-              </Link>
+              <Link className="nav-link" to="/about">About</Link>
             </li>
+
             <li className="nav-item">
-              <Link className="nav-link" to="/contact">
-                Contact
-              </Link>
+              <Link className="nav-link" to="/contact">Contact</Link>
             </li>
+
+            {/* Optional Dropdown */}
             <li className="nav-item dropdown">
-          <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul className="dropdown-menu">
-            <li><a className="dropdown-item" href="#">Action</a></li>
-            <li><a className="dropdown-item" href="#">Another action</a></li>
-            <li><hr className="dropdown-divider"/></li>
-            <li><a className="dropdown-item" href="#">Something else here</a></li>
+              <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                More
+              </a>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li><Link className="dropdown-item" to="/privacy">Privacy Policy</Link></li>
+                <li><Link className="dropdown-item" to="/terms">Terms of Use</Link></li>
+                <li><hr className="dropdown-divider" /></li>
+                <li><Link className="dropdown-item" to="/faq">FAQ</Link></li>
+              </ul>
+            </li>
           </ul>
-        </li>
-          </ul>
-          <form className="d-flex" role="search">
-          <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-            <button className="btn btn-outline-success" type="submit">Search</button>
-      </form>
+
+          {/* Search Bar */}
+          <form className="d-flex ms-lg-3 mt-3 mt-lg-0" role="search">
+            <input
+              className="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button className="btn btn-outline-light" type="submit">
+              Search
+            </button>
+          </form>
         </div>
       </div>
     </nav>

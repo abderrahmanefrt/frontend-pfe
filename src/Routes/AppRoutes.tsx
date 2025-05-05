@@ -7,6 +7,8 @@ import DoctorProfile from "../Doctor/DoctorProfile";
 import NotFound from "../Pages/NotFound";
 import PrivateRoute from "./PrivateRoute"; // Protects private Pages
 import DoctorDashboard from "../Doctor/DoctorDashboard";
+import DoctorProfileEdit from "../Doctor/ProfileUpdate";
+import DoctorsList from "../Admin/DoctorsList"
 import AdminDashboard from "../Admin/AdminDashboard";
 import DoctorManagement from "../Admin/DoctorManagement";
 import UserManagement from "../Admin/UserManagement";
@@ -29,20 +31,25 @@ import SignUpPatient from "../Pages/SignUpPatient";
 import SignUpDoctor from "../Pages/SignUpDoctor";
 import ReviewsManagement from "../Admin/ReviewsManagement";
 import AdminEditDoctorWrapper from "../Admin/AdminEditDoctorWrapper";
+import LoginDoctor from "../Pages/LoginDoctor";
+import ChangePassword from "../Doctor/ChangePassword";
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/doctor/login" element={<LoginDoctor />} />
       <Route path="/register" element={<Register />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/settings" element={<AccountSettingsWrapper />} />
       {/*<Route path="/edit-profile" element={<EditPatientProfile/>} />*/}
-      <Route path="/doctor/:id" element={<DoctorProfile />} />
+      
       <Route path="/doctorSearch" element={<DoctorSearchWithCalendar />} />
       <Route path="/patient/profile" element={<PatientProfile />} />
       <Route path="/edit-profile" element={<EditPatientProfileWrapper />} />
+    
+
       <Route
         path="/admin/edit-user/:id"
         element={<AdminEditPatientProfileWrapper />}
@@ -63,6 +70,8 @@ function AppRoutes() {
         path="/admin/edit-doctor/:id"
         element={<PrivateRoute element={<AdminEditDoctorWrapper />} />}
       />
+      <Route path="/doctor/profile/edit" element={<DoctorProfileEdit />} />
+
       <Route
         path="/admin/appointments"
         element={<PrivateRoute element={<AppointmentManagement />} />}
@@ -88,6 +97,11 @@ function AppRoutes() {
         path="/doctor/dashboard"
         element={<PrivateRoute element={<DoctorDashboard />} />}
       />
+      <Route path="/admin/doctors-list" element={<DoctorsList />} />
+<Route path="/admin" element={<AdminDashboard />} />
+
+      <Route path="/doctor/ChangePassword" element={<ChangePassword />} />
+
       {/* Single entry point for sign-up */}
       <Route path="/signup" element={<SignUpSelector />} />
       <Route path="/signup/patient" element={<SignUpPatient />} />

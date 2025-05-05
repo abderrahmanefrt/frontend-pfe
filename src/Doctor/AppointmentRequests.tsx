@@ -1,90 +1,91 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface AppointmentRequest {
-  id: number;
-  patientName: string;
-  requestedDate: string;
-  requestedTime: string;
-  status: "pending" | "accepted" | "rejected";
+  id: string;
+  patient: {
+    nom: string;
+    prenom: string;
+  };
+  date: string;
+  heure: string;
+  status: "en_attente" | "accepter" | "refuser";
 }
 
 const AppointmentRequests: React.FC = () => {
+  const { user } = useAuth();
   const [requests, setRequests] = useState<AppointmentRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulate fetching appointment requests from an API
-  useEffect(() => {
-    const dummyRequests: AppointmentRequest[] = [
-      {
-        id: 1,
-        patientName: "Alice Johnson",
-        requestedDate: "2025-01-15",
-        requestedTime: "09:30",
-        status: "pending",
-      },
-      {
-        id: 2,
-        patientName: "Bob Smith",
-        requestedDate: "2025-01-16",
-        requestedTime: "11:00",
-        status: "pending",
-      },
-      {
-        id: 3,
-        patientName: "Charlie Brown",
-        requestedDate: "2025-01-17",
-        requestedTime: "14:00",
-        status: "pending",
-      },
-      {
-        id: 4,
-        patientName: "ben hamada ramzi",
-        requestedDate: "2025-01-20",
-        requestedTime: "14:00",
-        status: "pending",
-      },
-      {
-        id: 5,
-        patientName: "jessi dkotton",
-        requestedDate: "2025-02-20",
-        requestedTime: "14:00",
-        status: "pending",
-      },
-    ];
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/appointments/medecin", {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
 
-    // Simulate an API delay
-    setTimeout(() => {
-      setRequests(dummyRequests);
-    }, 500);
-  }, []);
+      if (!response.ok) {
+        throw new Error("Failed to load appointments.");
+      }
 
-  // Accept the appointment request
-  const handleAccept = (id: number) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((req) =>
-        req.id === id ? { ...req, status: "accepted" } : req
-      )
-    );
+      const data = await response.json();
+      setRequests(data);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Reject the appointment request
-  const handleReject = (id: number) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((req) =>
-        req.id === id ? { ...req, status: "rejected" } : req
-      )
-    );
+  useEffect(() => {
+    if (user?.accessToken) {
+      fetchAppointments();
+    }
+  }, [user?.accessToken]);
+
+  const updateStatus = async (id: string, status: "accepter" | "refuser") => {
+    try {
+      const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/appointments/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update appointment status.");
+      }
+
+      await fetchAppointments(); // Refresh list
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Status update failed");
+    }
   };
 
   return (
     <div className="container mt-4">
-      
-      {requests.length === 0 ? (
-        <p>Loading requests...</p>
+      <h2 className="mb-4">Appointment Requests</h2>
+
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+          <button className="btn-close float-end" onClick={() => setError(null)} />
+        </div>
+      )}
+
+      {loading ? (
+        <p>Loading appointment requests...</p>
       ) : (
-        <table className="table">
+        <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Patient Name</th>
+              <th>Patient</th>
               <th>Date</th>
               <th>Time</th>
               <th>Status</th>
@@ -92,34 +93,34 @@ const AppointmentRequests: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {requests.map((request) => (
-              <tr key={request.id}>
-                <td>{request.patientName}</td>
-                <td>{request.requestedDate}</td>
-                <td>{request.requestedTime}</td>
-                <td>{request.status}</td>
-                <td>
-                  {request.status === "pending" ? (
-                    <>
-                      <button
-                        className="btn btn-success btn-sm me-2"
-                        onClick={() => handleAccept(request.id)}
-                      >
-                        Accept
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleReject(request.id)}
-                      >
-                        Reject
-                      </button>
-                    </>
-                  ) : (
-                    <span>No actions</span>
-                  )}
-                </td>
+            {requests.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center text-muted">No appointment requests</td>
               </tr>
-            ))}
+            ) : (
+              requests.map((req) => (
+                <tr key={req.id}>
+                  <td>{req.patient.nom} {req.patient.prenom}</td>
+                  <td>{req.date}</td>
+                  <td>{req.heure || "Not specified"}</td>
+                  <td>{req.status}</td>
+                  <td>
+                    {req.status === "en_attente" ? (
+                      <>
+                        <button className="btn btn-success btn-sm me-2" onClick={() => updateStatus(req.id, "accepter")}>
+                          Accept
+                        </button>
+                        <button className="btn btn-danger btn-sm" onClick={() => updateStatus(req.id, "refuser")}>
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <span>No actions</span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       )}

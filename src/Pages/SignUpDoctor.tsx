@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth, User } from "../context/AuthContext";
 
 const SignUpDoctor: React.FC = () => {
   const navigate = useNavigate();
-  const { signup } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -14,69 +12,103 @@ const SignUpDoctor: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [document, setDocument] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    const newUser: User = {
-      id: Date.now(),
-      name: `${firstName} ${lastName}`,
-      email,
-      phone,
-    };
-    // For doctors, the backend should mark the account as pending approval.
-    signup(newUser, password, { role: "doctor", specialty, licenseNumber });
-    alert("Doctor sign-up successful! Your account is pending approval.");
-    navigate("/doctor/dashboard");
+
+    const formData = new FormData();
+    formData.append("firstname", firstName);
+    formData.append("lastname", lastName);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("password", password);
+    formData.append("specialite", specialty);
+    formData.append("licenseNumber", licenseNumber);
+    formData.append("address", address);
+    formData.append("dateOfBirth", dateOfBirth);
+    if (photo) formData.append("photo", photo);
+    if (document) formData.append("document", document);
+
+    try {
+      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/auth/medecin/register", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Doctor registered successfully! Awaiting approval.");
+        navigate("/login");
+      } else {
+        alert(data.message || "Registration failed.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Network or server error.");
+    }
   };
 
   return (
-    <div className="container mt-4">
-      <h1>Doctor Sign Up</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Form fields similar to patient sign-up, plus specialty and license number */}
+    <div className="container mt-5">
+      <h2 className="mb-4">Doctor Sign Up</h2>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
-          <label htmlFor="firstName" className="form-label">First Name</label>
-          <input type="text" id="firstName" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <label className="form-label">First Name</label>
+          <input type="text" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="lastName" className="form-label">Last Name</label>
-          <input type="text" id="lastName" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          <label className="form-label">Last Name</label>
+          <input type="text" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input type="email" id="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <label className="form-label">Email</label>
+          <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="phone" className="form-label">Phone Number</label>
-          <input
-            type="tel"
-            id="phone"
-            className="form-control"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="e.g. 05558810"
-            required
-          />
+          <label className="form-label">Phone</label>
+          <input type="tel" className="form-control" value={phone} onChange={(e) => setPhone(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input type="password" id="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <label className="form-label">Password</label>
+          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-          <input type="password" id="confirmPassword" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          <label className="form-label">Confirm Password</label>
+          <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="specialty" className="form-label">Specialty</label>
-          <input type="text" id="specialty" className="form-control" placeholder="e.g., Cardiology" value={specialty} onChange={(e) => setSpecialty(e.target.value)} required />
+          <label className="form-label">Specialty</label>
+          <input type="text" className="form-control" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="e.g., Cardiology" required />
         </div>
         <div className="mb-3">
-          <label htmlFor="licenseNumber" className="form-label">License Number</label>
-          <input type="text" id="licenseNumber" className="form-control" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} required />
+          <label className="form-label">License Number</label>
+          <input type="text" className="form-control" value={licenseNumber} onChange={(e) => setLicenseNumber(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Address</label>
+          <input type="text" className="form-control" value={address} onChange={(e) => setAddress(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Date of Birth</label>
+          <input type="date" className="form-control" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Photo</label>
+          <input type="file" className="form-control" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] || null)} required />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Document (PDF)</label>
+          <input type="file" className="form-control" accept="application/pdf" onChange={(e) => setDocument(e.target.files?.[0] || null)} required />
         </div>
         <button type="submit" className="btn btn-primary">Sign Up</button>
       </form>

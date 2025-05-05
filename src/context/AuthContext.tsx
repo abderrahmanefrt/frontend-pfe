@@ -1,72 +1,63 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-export interface User {
-  id: number;
-  name: string;
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+// Typage de l'utilisateur
+interface User {
+  id: string;
+  role: "patient" | "doctor" | "admin";
+  accessToken: string;
+  firstname: string;
+  lastname: string;
+  specialite?: string; // Rendre optionnel
   email: string;
-  phone: string;
-   // We can add additional fields (e.g., role) as needed.
+  phone?: string; // Rendre optionnel
+  image?: string;
+  biography?: string;
+  refreshToken?: string; // Ajouter si nécessaire
 }
+
+// ... autres imports
 interface AuthContextType {
   user: User | null;
-  login: (user: User) => void;
+  loading: boolean; // <-- ajouter loading
+  login: (userData: User) => void;
   logout: () => void;
-  updateUser: (updatedUser: User) => void;
-  signup: (user: User, password: string, extraData?: Record<string, any>) => void;
 }
 
-// Create a context with an undefined default value
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-// AuthProvider wraps your application and provides the authentication state.
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // 'user' holds the currently logged in user's name, or null if not logged in.
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // <== nouveau state
 
-  // 'login' function sets the 'user' state to the provided username.
-  const login = (user: User) => {
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false); // <== fini de charger
+  }, []);
+
+  const login = (userData: User) => {
+    const user = {
+      ...userData,
+      phone: userData.phone || "",
+      specialite: userData.specialite || "",
+    };
     setUser(user);
-   // localStorage.setItem("authToken", "your-token-or-true");
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
-  // 'logout' function clears the 'user' state.
   const logout = () => {
     setUser(null);
-    //localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
   };
-  const updateUser = (updatedUser: User) => {
-    setUser(updatedUser);
-  };
-  // The signup function registers a new user.
-  // In a real application, this would call our backend API to create a new account.
-  // The extraData parameter can be used for role-specific information (e.g., specialty, license number for doctors).
-  const signup = (
-    newUser: User,
-    password: string,
-    extraData?: Record<string, any>
-  ) => {
-    // Example: Log the sign-up details for demonstration purposes.
-    console.log("Signing up user:", newUser, "with password:", password, extraData);
-    
-    // In a real application, send a POST request to your signup endpoint here.
-    // For now, we simply set the user state.
-    setUser(newUser);
-  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout ,updateUser, signup}}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to easily access the authentication context.
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
+

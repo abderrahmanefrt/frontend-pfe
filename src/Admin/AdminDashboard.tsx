@@ -1,119 +1,206 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardStats {
   totalUsers: number;
   totalDoctors: number;
   totalAppointments: number;
   pendingDoctorRequests: number;
-  pendingReviews: number;        // new stat for moderation
-  averageModerationTime: number; // in hours, dummy value
-  totalRejectedReviews: number;  // dummy value
+  pendingReviews: number;
+  totalRejectedReviews: number;
 }
 
 const AdminDashboard: React.FC = () => {
+  const { user, logout } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Simulate fetching dashboard statistics from an API
   useEffect(() => {
-    const dummyStats: DashboardStats = {
-      totalUsers: 150,
-      totalDoctors: 20,
-      totalAppointments: 300,
-      pendingDoctorRequests: 5,
-      pendingReviews: 3,          // comments awaiting moderation
-      averageModerationTime: 2.5, // hours
-      totalRejectedReviews: 7
+    const fetchStats = async () => {
+      if (!user || user.role !== 'admin') {
+        alert("Access restricted to administrators");
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://pfe-project-2nrq.onrender.com/api/admin/stats', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${user.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.status === 401) {
+          logout();
+          navigate('/login');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error('Error:', error);
+        setError('Failed to load dashboard statistics');
+        if (error instanceof Error && error.message.includes('401')) {
+          logout();
+          navigate('/login');
+        }
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setTimeout(() => {
-      setStats(dummyStats);
-    }, 1000);
-  }, []);
+    fetchStats();
+  }, [user, logout, navigate]);
 
-  if (!stats) {
-    return <div>Loading admin dashboard...</div>;
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className="ms-3 text-muted">Loading dashboard...</p>
+      </div>
+    );
   }
 
+  if (error) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+        <p className="text-danger">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="btn btn-primary mt-3"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+        <p className="text-muted">No data available</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="btn btn-primary mt-3"
+        >
+          Refresh
+        </button>
+      </div>
+    );
+  }
+
+  const {
+    totalUsers,
+    totalDoctors,
+    totalAppointments,
+    pendingDoctorRequests,
+    pendingReviews,
+    totalRejectedReviews,
+  } = stats;
+
   return (
-    <div className="container mt-4">
-      <h1>Admin Dashboard</h1>
-      <div className="row">
-        {/* Total Users */}
-        <div className="col-md-2">
-          <div className="card text-white bg-primary mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Total Users</h5>
-              <p className="card-text">{stats.totalUsers}</p>
-            </div>
+    <div className="container-fluid p-4">
+      <header className="mb-4">
+        <div className="d-flex justify-content-between align-items-center">
+          <h1 className="h3">Admin Dashboard</h1>
+          <div className="d-flex align-items-center">
+            <span className="me-3 text-muted">
+              Logged in as: <strong>{user?.firstname} {user?.lastname}</strong>
+            </span>
+            <button onClick={logout} className="btn btn-danger">Logout</button>
           </div>
         </div>
-        {/* Total Doctors */}
-        <div className="col-md-2">
-          <div className="card text-white bg-success mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Total Doctors</h5>
-              <p className="card-text">{stats.totalDoctors}</p>
-            </div>
-          </div>
-        </div>
-        {/* Total Appointments */}
-        <div className="col-md-2">
-          <div className="card text-white bg-warning mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Appointments</h5>
-              <p className="card-text">{stats.totalAppointments}</p>
-            </div>
-          </div>
-        </div>
-        {/* Pending Doctor Requests */}
-        <div className="col-md-2">
-          <div className="card text-white bg-danger mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Pending Dr Requests</h5>
-              <p className="card-text">{stats.pendingDoctorRequests}</p>
-            </div>
-          </div>
-        </div>
-        {/* Pending Reviews */}
-        <div className="col-md-2">
-          <div className="card text-white bg-secondary mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Pending Reviews</h5>
-              <p className="card-text">{stats.pendingReviews}</p>
-            </div>
-          </div>
-        </div>
-        {/* Rejected Reviews */}
-        <div className="col-md-2">
-          <div className="card text-white bg-dark mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Rejected Reviews</h5>
-              <p className="card-text">{stats.totalRejectedReviews}</p>
-            </div>
-          </div>
-        </div>
+      </header>
+
+      {/* Boutons vers la gestion des médecins */}
+      <div className="d-flex justify-content-end gap-2 mb-3">
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => navigate('/admin/doctors')}
+        >
+          Manage Pending Doctors
+        </button>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate('/admin/doctors-list')}
+        >
+          View Accepted Doctors
+        </button>
       </div>
 
-      {/* Navigation Links for Further Management */}
-      <div className="mt-4">
-        <h2>Manage</h2>
-        <div className="d-flex flex-wrap gap-3">
-          <Link to="/admin/users" className="btn btn-outline-primary">
-            Manage Users
-          </Link>
-          <Link to="/admin/doctors" className="btn btn-outline-success">
-            Manage Doctors
-          </Link>
-          <Link to="/admin/appointments" className="btn btn-outline-warning">
-            Manage Appointments
-          </Link>
-          <Link to="/admin/reviews" className="btn btn-outline-secondary">
-            Manage Reviews
-          </Link>
-          <Link to="/admin/reports" className="btn btn-outline-danger">
-            View Reports
-          </Link>
+      {/* Cartes de statistiques */}
+      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Users</h5>
+              <p className="card-text display-4 text-primary">{totalUsers}</p>
+              <p className="text-muted">Total registered</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Doctors</h5>
+              <p className="card-text display-4 text-success">{totalDoctors}</p>
+              <p className="text-muted">Total approved</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Appointments</h5>
+              <p className="card-text display-4 text-warning">{totalAppointments}</p>
+              <p className="text-muted">Total bookings</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="card shadow-sm border-start border-4 border-warning">
+            <div className="card-body">
+              <h5 className="card-title">Pending Doctor Requests</h5>
+              <p className="card-text display-4 text-warning">{pendingDoctorRequests}</p>
+              <p className="text-muted">Require action</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Reviews to Moderate</h5>
+              <p className="card-text display-4 text-danger">{pendingReviews}</p>
+              <p className="text-muted">Awaiting approval</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Rejected Reviews</h5>
+              <p className="card-text display-4 text-danger">{totalRejectedReviews}</p>
+              <p className="text-muted">Total rejected</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

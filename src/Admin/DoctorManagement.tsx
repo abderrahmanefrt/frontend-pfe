@@ -1,91 +1,192 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-interface Doctor {
-  id: number;
-  name: string;
-  email: string;
-  specialty: string;
-  status: "pending" | "approved" | "rejected";
-}
+const DoctorManagement = () => {
+  const { user } = useAuth();
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
 
-const DoctorManagement: React.FC = () => {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-
-  // Simulate fetching doctor profiles from an API
   useEffect(() => {
-    const dummyDoctors: Doctor[] = [
-      { id: 1, name: "Dr. Alice Smith", email: "alice@example.com", specialty: "Cardiology", status: "pending" },
-      { id: 2, name: "Dr. Bob Johnson", email: "bob@example.com", specialty: "Dermatology", status: "approved" },
-      { id: 3, name: "Dr. Carol Lee", email: "carol@example.com", specialty: "Pediatrics", status: "pending" },
-    ];
+    const getPendingDoctors = async () => {
+      try {
+        const response = await fetch(
+          "https://pfe-project-2nrq.onrender.com/api/admin/medecins-pending",
+          {
+            headers: {
+              Authorization: `Bearer ${user?.accessToken}`,
+            },
+          }
+        );
 
-    // Simulate an API call delay
-    setTimeout(() => {
-      setDoctors(dummyDoctors);
-      setLoading(false);
-    }, 1000);
-  }, []);
+        if (!response.ok) {
+          throw new Error("Failed to load pending doctors");
+        }
 
-  // Approve a doctor profile by setting its status to "approved"
-  const handleApprove = (id: number) => {
-    setDoctors(prevDoctors =>
-      prevDoctors.map(doctor =>
-        doctor.id === id ? { ...doctor, status: "approved" } : doctor
-      )
-    );
-    alert(`Doctor with id ${id} approved.`);
+        const data = await response.json();
+        setDoctors(data);
+      } catch (error: any) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.accessToken) getPendingDoctors();
+  }, [user]);
+
+  const stripQuotes = (str: string) => str?.replace(/^"(.*)"$/, "$1");
+
+  const handleApprove = async (id: number) => {
+    try {
+      const res = await fetch(
+        `https://pfe-project-2nrq.onrender.com/api/admin/medecins/${id}/approve`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to approve doctor");
+      setDoctors((prev) => prev.filter((doc) => doc.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Approval failed");
+    }
   };
 
-  // Reject a doctor profile by setting its status to "rejected"
-  const handleReject = (id: number) => {
-    setDoctors(prevDoctors =>
-      prevDoctors.map(doctor =>
-        doctor.id === id ? { ...doctor, status: "rejected" } : doctor
-      )
-    );
-    alert(`Doctor with id ${id} rejected.`);
+  const handleReject = async (id: number) => {
+    try {
+      const res = await fetch(
+        `https://pfe-project-2nrq.onrender.com/api/admin/medecins/${id}/reject`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to reject doctor");
+      setDoctors((prev) => prev.filter((doc) => doc.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Rejection failed");
+    }
   };
-   
-  
-  // Placeholder function for updating doctor details.
-  // In a real app, you might navigate to an update form or open a modal.
-  const handleUpdate = (id: number) => {
-    alert(`Update details for doctor with id ${id}.`);
-    // navigate to admin doctor-edit page
-    navigate(`/admin/edit-doctor/${id}`);
+
+  const openDoctorProfile = (doctor: any) => {
+    setSelectedDoctor(doctor);
   };
-  
-  if (loading) return <p>Loading doctor profiles...</p>;
+
+  const closeModal = () => setSelectedDoctor(null);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-danger">{error}</p>;
 
   return (
-    <div className="container mt-4">
-      <h2>Doctor Management</h2>
-      <table className="table">
-        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Specialty</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody>
-          {doctors.map(doc => (
-            <tr key={doc.id}>
-              <td>{doc.id}</td>
-              <td>{doc.name}</td>
-              <td>{doc.email}</td>
-              <td>{doc.specialty}</td>
-              <td>{doc.status}</td>
-              <td>
-                {doc.status === "pending" && (
-                  <>  
-                    <button className="btn btn-success btn-sm me-2" onClick={() => handleApprove(doc.id)}>Approve</button>
-                    <button className="btn btn-danger btn-sm me-2" onClick={() => handleReject(doc.id)}>Reject</button>
-                  </>
-                )}
-                <button className="btn btn-primary btn-sm" onClick={() => handleUpdate(doc.id)}>Update</button>
-              </td>
-            </tr>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Pending Doctors</h2>
+      {doctors.length > 0 ? (
+        <ul className="list-group">
+          {doctors.map((doc) => (
+            <li
+              key={doc.id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>{stripQuotes(doc.firstname)} {stripQuotes(doc.lastname)}</strong><br />
+                <small className="text-muted">{stripQuotes(doc.email)}</small>
+              </div>
+              <div>
+                <button
+                  className="btn btn-info btn-sm me-2"
+                  onClick={() => openDoctorProfile(doc)}
+                >
+                  View Profile
+                </button>
+                <button
+                  className="btn btn-success btn-sm me-2"
+                  onClick={() => handleApprove(doc.id)}
+                >
+                  Approve
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleReject(doc.id)}
+                >
+                  Reject
+                </button>
+              </div>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      ) : (
+        <p className="text-center">No pending doctors.</p>
+      )}
+
+      {/* Modal de profil du médecin */}
+      {selectedDoctor && (
+        <div className="modal show d-block bg-dark bg-opacity-75" onClick={closeModal}>
+          <div className="modal-dialog modal-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {stripQuotes(selectedDoctor.firstname)} {stripQuotes(selectedDoctor.lastname)}
+                </h5>
+                <button className="btn-close" onClick={closeModal}></button>
+              </div>
+              <div className="modal-body">
+                <p><strong>Email:</strong> {stripQuotes(selectedDoctor.email)}</p>
+                <p><strong>Phone:</strong> {stripQuotes(selectedDoctor.phone)}</p>
+                <p><strong>Specialty:</strong> {stripQuotes(selectedDoctor.specialite)}</p>
+                <p><strong>License Number:</strong> {stripQuotes(selectedDoctor.licenseNumber)}</p>
+                <p><strong>Address:</strong> {selectedDoctor.address}</p>
+                <p><strong>Latitude:</strong> {selectedDoctor.latitude}</p>
+                <p><strong>Longitude:</strong> {selectedDoctor.longitude}</p>
+
+                {/* Document */}
+                {selectedDoctor.document ? (
+                  <p>
+                    <strong>Document: </strong>
+                    <a
+                      href={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.document.replace(/\\/g, '/')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View PDF
+                    </a>
+                  </p>
+                ) : (
+                  <p>No document uploaded.</p>
+                )}
+
+                {/* Photo */}
+                {selectedDoctor.photo ? (
+                  <div>
+                    <strong>Photo:</strong>
+                    <div className="mt-2">
+                      <img
+                        src={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.photo.replace(/\\/g, '/')}`}
+                        alt="Doctor"
+                        style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p>No photo uploaded.</p>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={closeModal}>Close</button>
+                <button className="btn btn-danger" onClick={() => handleReject(selectedDoctor.id)}>Reject</button>
+                <button className="btn btn-success" onClick={() => handleApprove(selectedDoctor.id)}>Approve</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

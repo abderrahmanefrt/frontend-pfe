@@ -11,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AppRoutes from "./Routes/AppRoutes";
 import { AuthProvider } from "./context/AuthContext";
 
+
 function App() {
   return (
     <AuthProvider>
