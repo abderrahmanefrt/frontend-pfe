@@ -70,11 +70,11 @@ const Dashboard: React.FC = () => {
                   className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" 
                   style={{ width: 64, height: 64, fontSize: "1.5rem" }}
                 >
-                  {user?.name?.[0] || "G"}
+                  {user?.lastname?.[0] || "G"}
                 </div>
               </div>
               <div>
-                <h2 className="mb-1">Bonjour, {user?.name || "Guest"} !</h2>
+                <h2 className="mb-1">Bonjour, {user?.lastname || "Guest"} !</h2>
                 <small className="text-muted">Vous avez {upcomingCount} rendez-vous à venir.</small>
               </div>
             </div>

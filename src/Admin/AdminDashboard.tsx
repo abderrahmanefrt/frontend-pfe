@@ -139,6 +139,13 @@ const AdminDashboard: React.FC = () => {
         >
           View Accepted Doctors
         </button>
+        <button className="btn btn-success" onClick={() => navigate('/admin/users')}>
+          View patients
+        </button>
+        <button className="btn btn-outline-primary me-2" onClick={() => navigate('/admin/appointments')}>
+  View Appointments
+</button>
+
       </div>
 
       {/* Cartes de statistiques */}

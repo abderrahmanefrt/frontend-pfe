@@ -7,53 +7,17 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        alert(data.message || "Login failed.");
-        return;
-      }
-  
-      const userData = {
-        id: data.id,
-        role: data.role,  // Assurez-vous que role est présent dans data
-        firstname: data.firstname,
-        lastname: data.lastname,
-        email: data.email,
-        accessToken: data.accessToken,
-        specialite: data.specialite, // La spécialité pour les médecins
-        phone: data.phone, // Le téléphone si nécessaire
-      };
-  
-      login(userData);
-  
-      // Log du rôle pour vérifier
-      console.log("Utilisateur connecté avec le rôle :", data.role);
-  
-      // Redirection selon le rôle
-      if (data.role === "admin") {
-        navigate("/admin");
-      } else if (data.role === "medecin") {
-        navigate("/doctor/dashboard");
-      } else {
-        navigate("/dashboard");
-      }
-  
+      await login(email, password);  // Passer les deux arguments ici
+      // Une fois connecté, la navigation se fait automatiquement grâce à `navigate` dans le contexte
     } catch (err) {
-      console.error(err);
-      alert("Server or network error.");
+      console.error("Login error:", err);
+      alert("Login failed.");
     }
   };
-  
 
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">

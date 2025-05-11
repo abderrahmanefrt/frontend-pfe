@@ -1,97 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import DoctorCard from "../components/DoctorCard";
 import ScheduleAppointment from "./ScheduleAppointment";
-import MapModal from "../components/MapModal"; // new map modal component
+import MapModal from "../components/MapModal";
+import { Spinner, Alert } from "react-bootstrap";
 
 interface Availability {
-  month: number;
-  day: number;
-  hour: string;
+  date: string; // Format: YYYY-MM-DD
+  startTime: string;
+  endTime: string;
 }
 
 interface Doctor {
   id: number;
-  name: string;
-  specialty: string;
-  location: string;
-  coords?: { lat: number; lng: number };
-  rating: number;
-  availability: Availability[];
-  doctorInfo: { label: string; value: string }[];
-}
-
-// Dummy doctor data with optional coords for map filtering
-const dummyDoctors: Doctor[] = [
-  {
-    id: 1,
-    name: "Dr. Alice Smith",
-    specialty: "Cardiology",
-    location: "New York",
-    coords: { lat: 40.7128, lng: -74.006 },
-    rating: 4,
-    availability: [
-      { month: 12, day: 5, hour: "10:00" },
-      { month: 12, day: 5, hour: "14:00" },
-      { month: 12, day: 7, hour: "09:00" },
-    ],
-    doctorInfo: [
-      { label: "Specialty", value: "Cardiology" },
-      { label: "Location", value: "New York" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Dr. Bob Johnson",
-    specialty: "Dermatology",
-    location: "Los Angeles",
-    coords: { lat: 34.0522, lng: -118.2437 },
-    rating: 5,
-    availability: [
-      { month: 12, day: 10, hour: "11:00" },
-      { month: 12, day: 15, hour: "15:00" },
-    ],
-    doctorInfo: [
-      { label: "Specialty", value: "Dermatology" },
-      { label: "Location", value: "Los Angeles" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Dr. Carol Brown",
-    specialty: "Pediatrics",
-    location: "Chicago",
-    coords: { lat: 41.8781, lng: -87.6298 },
-    rating: 3,
-    availability: [
-      { month: 12, day: 5, hour: "08:00" },
-      { month: 12, day: 7, hour: "10:00" },
-      { month: 12, day: 7, hour: "12:00" },
-    ],
-    doctorInfo: [
-      { label: "Specialty", value: "Pediatrics" },
-      { label: "Location", value: "Chicago" },
-    ],
-  },
-];
-
-// Haversine formula to compute distance (km) between two lat/lng points
-function distanceKm(
-  a: { lat: number; lng: number },
-  b: { lat: number; lng: number }
-): number {
-  const toRad = (x: number) => (x * Math.PI) / 180;
-  const dLat = toRad(b.lat - a.lat);
-  const dLon = toRad(b.lng - a.lng);
-  const lat1 = toRad(a.lat);
-  const lat2 = toRad(b.lat);
-  const R = 6371; // Earth's radius in km
-  const h =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-  return 2 * R * Math.asin(Math.sqrt(h));
+  firstname: string;
+  lastname: string;
+  specialite: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  rating?: number;
+  availabilities?: Availability[];
 }
 
 const DoctorSearchWithCalendar: React.FC = () => {
+  const { getAccessToken } = useAuth();
   const [specialty, setSpecialty] = useState("");
   const [displayLocation, setDisplayLocation] = useState("");
   const [locationCoords, setLocationCoords] = useState<{
@@ -99,87 +32,94 @@ const DoctorSearchWithCalendar: React.FC = () => {
     lng: number;
   } | null>(null);
   const [minRating, setMinRating] = useState(0);
-  const [filterMonth, setFilterMonth] = useState<number | null>(null);
-  const [filterDay, setFilterDay] = useState<number | null>(null);
-  const [filterHour, setFilterHour] = useState("");
-  const [results, setResults] = useState<Doctor[]>(dummyDoctors);
+  const [filterDate, setFilterDate] = useState<string | null>(null);
+  const [filterTime, setFilterTime] = useState<string | null>(null);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showMapModal, setShowMapModal] = useState(false);
 
-  const doSearch = (
-    spec: string,
-    loc: string,
-    rating: number,
-    m: number | null,
-    d: number | null,
-    h: string,
-    coords: { lat: number; lng: number } | null
-  ) => {
-    // If map coords provided, filter by proximity (within 10 km)
-    if (coords) {
-      const nearby = dummyDoctors
-        .filter((doc) => doc.coords)
-        .map((doc) => ({
-          ...doc,
-          dist: doc.coords! ? distanceKm(coords, doc.coords!) : Infinity,
-        }))
-        .sort((a, b) => a.dist - b.dist)
-        .slice(0, 5) // top 5 nearest
-        .map(({ dist, ...doc }) => doc);
-      setResults(nearby);
-      return;
+
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      setError("");
+  
+      const params = new URLSearchParams();
+      let baseUrl = "";
+  
+      // Cas de recherche par localisation
+      if (locationCoords) {
+        baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/nearMedecin`;
+        params.append("latitude", locationCoords.lat.toString());
+        params.append("longitude", locationCoords.lng.toString());
+        params.append("distance", "15"); // Tu peux ajuster la distance si nécessaire
+      } 
+      // Cas de recherche par spécialité ou autre filtre
+      else if (specialty || minRating || filterDate || filterTime) {
+        baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/SearchMedecin`;
+  
+        if (specialty) params.append("specialite", specialty);
+        params.append("page", "1");
+        params.append("limit", "20");
+      } 
+      // Cas de récupération de tous les médecins approuvés
+      else {
+        baseUrl = `${import.meta.env.VITE_API_URL}/api/users/listofdoctors`;
+      }
+  
+      const finalUrl = `${baseUrl}?${params.toString()}`;
+      console.log("Final request URL:", finalUrl);
+  
+      const token = await getAccessToken();
+      const response = await fetch(finalUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "API request failed");
+      }
+  
+      const data = await response.json();
+      console.log("API response data:", data);
+  
+      const medecins = data.medecins || data || [];
+  
+      // Filtrer les médecins par la note minimum si nécessaire
+      const filteredByRating = minRating
+        ? medecins.filter((doc: any) => parseFloat(doc.rating || 0) >= minRating)
+        : medecins;
+  
+      setDoctors(filteredByRating);
+    }  catch (error: any) {
+      console.error("Erreur lors de la récupération des médecins:", error);
+      setError(error.message || "Failed to load doctors");
+      setDoctors([]);
+    } finally {
+      setLoading(false);
     }
-
-    // Fallback: text-based and availability filtering
-    const filtered = dummyDoctors.filter((doc) => {
-      const matchSpec = spec
-        ? doc.specialty.toLowerCase().includes(spec.toLowerCase())
-        : true;
-      const matchRating = doc.rating >= rating;
-      const matchLocation = loc
-        ? doc.location.toLowerCase().includes(loc.toLowerCase())
-        : true;
-      const matchAvail =
-        m && d && h
-          ? doc.availability.some(
-              (s) => s.month === m && s.day === d && s.hour === h
-            )
-          : true;
-      return matchSpec && matchRating && matchLocation && matchAvail;
-    });
-    setResults(filtered);
   };
+  
+  
+  
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    doSearch(
-      specialty,
-      displayLocation,
-      minRating,
-      filterMonth,
-      filterDay,
-      filterHour,
-      locationCoords
-    );
-  };
+  useEffect(() => {
+    fetchDoctors();
+  }, [specialty, locationCoords, filterDate, filterTime]);
 
   const handleTimeSelect = (date: Date, time: string) => {
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    setFilterMonth(month);
-    setFilterDay(day);
-    setFilterHour(time);
-    doSearch(
-      specialty,
-      displayLocation,
-      minRating,
-      month,
-      day,
-      time,
-      locationCoords
-    );
+    const dateStr = date.toISOString().split("T")[0];
+    setFilterDate(dateStr);
+    setFilterTime(time);
   };
 
   const openMap = () => setShowMapModal(true);
+  
   const handleMapConfirm = (
     coords: { lat: number; lng: number },
     place: string
@@ -187,22 +127,12 @@ const DoctorSearchWithCalendar: React.FC = () => {
     setLocationCoords(coords);
     setDisplayLocation(place);
     setShowMapModal(false);
-    // immediately search using new coords
-    doSearch(
-      specialty,
-      place,
-      minRating,
-      filterMonth,
-      filterDay,
-      filterHour,
-      coords
-    );
   };
 
   return (
     <div className="container mt-4">
       <h1>Find a Doctor</h1>
-      <form onSubmit={handleSearch} className="mb-4">
+      <form onSubmit={(e) => { e.preventDefault(); fetchDoctors(); }} className="mb-4">
         <div className="row g-3">
           <div className="col-md-3">
             <label className="form-label">Specialty</label>
@@ -252,7 +182,9 @@ const DoctorSearchWithCalendar: React.FC = () => {
             </select>
           </div>
           <div className="col-md-3 d-flex align-items-end">
-            <button className="btn btn-primary w-100">Search</button>
+            <button className="btn btn-primary w-100" disabled={loading}>
+              {loading ? "Searching..." : "Search"}
+            </button>
           </div>
         </div>
       </form>
@@ -269,21 +201,38 @@ const DoctorSearchWithCalendar: React.FC = () => {
         />
       )}
 
+      {loading && (
+        <div className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      )}
+
+      {error && (
+        <Alert variant="danger">
+          {error}
+        </Alert>
+      )}
+
       <h2>Results</h2>
       <div className="row">
-        {results.length > 0 ? (
-          results.map((d) => (
-            <div key={d.id} className="col-md-4 mb-4">
+        {doctors.length > 0 ? (
+          doctors.map((doctor) => (
+            <div key={doctor.id} className="col-md-4 mb-4">
               <DoctorCard
-                doctorId={d.id}
-                doctorInfo={d.doctorInfo}
-                doctorName={d.name}
-                rating={d.rating}
+                doctorId={doctor.id}
+                doctorInfo={[
+                  { label: "Specialty", value: doctor.specialite },
+                  { label: "Address", value: doctor.address },
+                ]}
+                doctorName={`${doctor.firstname} ${doctor.lastname}`}
+                rating={doctor.rating || 0}
               />
             </div>
           ))
         ) : (
-          <p>No doctors found.</p>
+          !loading && <p>No doctors found matching your criteria.</p>
         )}
       </div>
     </div>

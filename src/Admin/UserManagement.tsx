@@ -1,103 +1,139 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
-interface User {
+interface Patient {
   id: number;
-  name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   phone: string;
+  gender: string;
+  dateOfBirth: string;
+  status: string;
+  address: string | null;
 }
 
-const UserManagement: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
+const PatientsList: React.FC = () => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const { user } = useAuth();
 
-  // Simulate fetching patient accounts from an API
-  useEffect(() => {
-    const dummyUsers: User[] = [
-      {
-        id: 1,
-        name: "Alice Johnson",
-        email: "alice@example.com",
-        phone: "555-1234",
-      },
-      { id: 2, name: "Bob Smith", email: "bob@example.com", phone: "555-5678" },
-      {
-        id: 3,
-        name: "Charlie Brown",
-        email: "charlie@example.com",
-        phone: "555-9012",
-      },
-    ];
-
-    // Simulate API delay
-    setTimeout(() => {
-      setUsers(dummyUsers);
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  // Handler for editing a user
-  const handleEdit = (id: number) => {
-    alert(`Edit user with id: ${id}`);
-    navigate(`/admin/edit-user/${id}`);
-    // In a real application, you might redirect to an edit form or open a modal.
-  };
-
-  // Handler for deleting a user
-  const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-      alert(`User with id ${id} deleted`);
-      // In a real app, you would also call an API to delete the user from the backend.
+  const fetchPatients = async () => {
+    try {
+      const res = await fetch('https://pfe-project-2nrq.onrender.com/api/admin/users', {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
+      const data = await res.json();
+      setPatients(data);
+    } catch (error) {
+      console.error('Failed to fetch patients');
     }
   };
 
+  const fetchPatientById = async (id: number) => {
+    try {
+      const res = await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
+      const data = await res.json();
+      setSelectedPatient(data);
+    } catch (error) {
+      console.error('Failed to fetch patient details');
+    }
+  };
+
+  const handleBlock = async (id: number) => {
+    try {
+      await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}/block`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (err) {
+      alert('Failed to block patient');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this patient?')) return;
+    try {
+      await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${user?.accessToken}`,
+        },
+      });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (err) {
+      alert('Failed to delete patient');
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, [user]);
+
   return (
     <div className="container mt-4">
-      <h2>User Management</h2>
-      {loading ? (
-        <p>Loading users...</p>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Actions</th>
+      <h3>Patients List</h3>
+      <table className="table table-bordered mt-3">
+        <thead className="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {patients.map((patient) => (
+            <tr key={patient.id}>
+              <td>{patient.id}</td>
+              <td>{patient.firstname} {patient.lastname}</td>
+              <td>{patient.email}</td>
+              <td>{patient.status}</td>
+              <td>
+                <button className="btn btn-info btn-sm me-2" onClick={() => fetchPatientById(patient.id)}>
+                  View
+                </button>
+                <button className="btn btn-warning btn-sm me-2" onClick={() => handleBlock(patient.id)}>
+                  Block
+                </button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(patient.id)}>
+                  Delete
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.phone}</td>
-                <td>
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => handleEdit(user.id)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </tbody>
+      </table>
+
+      {selectedPatient && (
+        <div className="card mt-4">
+          <div className="card-body">
+            <h5 className="card-title">
+              {selectedPatient.firstname} {selectedPatient.lastname}
+            </h5>
+            <p><strong>Email:</strong> {selectedPatient.email}</p>
+            <p><strong>Phone:</strong> {selectedPatient.phone}</p>
+            <p><strong>Gender:</strong> {selectedPatient.gender}</p>
+            <p><strong>Date of Birth:</strong> {new Date(selectedPatient.dateOfBirth).toLocaleDateString()}</p>
+            <p><strong>Status:</strong> {selectedPatient.status}</p>
+            <p><strong>Address:</strong> {selectedPatient.address || 'N/A'}</p>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-export default UserManagement;
+export default PatientsList;

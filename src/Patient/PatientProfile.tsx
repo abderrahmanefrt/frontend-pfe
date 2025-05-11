@@ -1,10 +1,89 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import AppointmentHistory from "./AppointmentHistory";
 import { Link } from "react-router-dom";
+import AppointmentHistory from "./AppointmentHistory"; // Assuming this component exists
+import Spinner from "react-bootstrap/Spinner";
 
+// Fonction pour rafraîchir le token d'accès
+const refreshAccessToken = async () => {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) return null;
+
+  const user = JSON.parse(storedUser);
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh-token/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken: user.refreshToken }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      user.accessToken = data.accessToken;
+      localStorage.setItem("user", JSON.stringify(user));
+      return data.accessToken;
+    } else {
+      throw new Error("Failed to refresh token");
+    }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+// Fonction pour faire une requête authentifiée
+const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) throw new Error("Token not found");
+
+  const user = JSON.parse(storedUser);
+
+  const headers = new Headers(options.headers);
+  headers.set("Authorization", `Bearer ${user.accessToken}`);
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401) {
+    // Si le token est expiré, rafraîchir
+    const newAccessToken = await refreshAccessToken();
+    if (newAccessToken) {
+      // Refaire la requête avec le nouveau token
+      headers.set("Authorization", `Bearer ${newAccessToken}`);
+      return fetch(url, { ...options, headers });
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status}`);
+  }
+
+  return response;
+};
+
+// Composant principal PatientProfile
 const PatientProfile: React.FC = () => {
   const { user } = useAuth();
+  const [profile, setProfile] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/me`);
+        const data = await response.json();
+        setProfile(data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <div className="container mt-4">
@@ -18,13 +97,13 @@ const PatientProfile: React.FC = () => {
             </div>
             <div className="card-body">
               <p>
-                <strong>Name:</strong> {user?.name || "Guest"}
+                <strong>Name:</strong> {profile?.firstname} {profile?.lastname || "Guest"}
               </p>
               <p>
-                <strong>Date of Birth:</strong> January 1, 1980
+                <strong>Date of Birth:</strong> {profile?.dateOfBirth || "N/A"}
               </p>
               <p>
-                <strong>Gender:</strong> Male
+                <strong>Gender:</strong> {profile?.gender || "N/A"}
               </p>
             </div>
           </div>
@@ -35,13 +114,13 @@ const PatientProfile: React.FC = () => {
             </div>
             <div className="card-body">
               <p>
-                <strong>Phone:</strong> (555) 555-5555
+                <strong>Phone:</strong> {profile?.phone || "Not available"}
               </p>
               <p>
-                <strong>Email:</strong> guest@example.com
+                <strong>Email:</strong> {profile?.email}
               </p>
               <p>
-                <strong>Address:</strong> 123 Main St, City, State, ZIP
+                <strong>Address:</strong> {profile?.address || "Not provided"}
               </p>
             </div>
           </div>
@@ -52,20 +131,19 @@ const PatientProfile: React.FC = () => {
             </div>
             <div className="card-body">
               <p>
-                <strong>Medical History:</strong> Chronic conditions, previous
-                surgeries
+                <strong>Medical History:</strong> {profile?.medicalHistory || "No details"}
               </p>
               <p>
-                <strong>Allergies:</strong> Penicillin, nuts
+                <strong>Allergies:</strong> {profile?.allergies || "None"}
               </p>
               <p>
-                <strong>Medications:</strong> Current prescriptions
+                <strong>Medications:</strong> {profile?.medications || "None"}
               </p>
               <p>
-                <strong>Primary Care Physician:</strong> Dr. Jane Smith
+                <strong>Primary Care Physician:</strong> {profile?.primaryCarePhysician || "Not assigned"}
               </p>
               <p>
-                <strong>Chifa Card Number:</strong> 21332222
+                <strong>Chifa Card Number:</strong> {profile?.chifaCardNumber || "Not provided"}
               </p>
             </div>
           </div>
@@ -76,13 +154,13 @@ const PatientProfile: React.FC = () => {
             </div>
             <div className="card-body">
               <p>
-                <strong>Name:</strong> Jane Doe
+                <strong>Name:</strong> {profile?.emergencyContact?.name || "Not available"}
               </p>
               <p>
-                <strong>Relationship:</strong> Parent
+                <strong>Relationship:</strong> {profile?.emergencyContact?.relationship || "N/A"}
               </p>
               <p>
-                <strong>Contact Number:</strong> (555) 987-6543
+                <strong>Contact Number:</strong> {profile?.emergencyContact?.contactNumber || "N/A"}
               </p>
             </div>
           </div>

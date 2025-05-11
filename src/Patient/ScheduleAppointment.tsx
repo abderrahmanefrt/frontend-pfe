@@ -1,107 +1,160 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./ScheduleAppointment.css"; // Custom CSS for highlighting available days
+import "./ScheduleAppointment.css";
+import { useAuth } from "../context/AuthContext";
 
 interface AvailableSlot {
   date: string; // Format: YYYY-MM-DD
-  times: string[];
+  startTime: string;
+  endTime: string;
 }
+
 interface ScheduleAppointmentProps {
-    onTimeSelect?: (selectedDate: Date, time: string) => void;
-  }
-// Dummy data simulating available appointment slots
-const dummyAvailableSlots: AvailableSlot[] = [
-  { date: "2024-12-05", times: ["10:00", "11:30", "14:00"] },
-  { date: "2024-12-07", times: ["09:00", "13:00"] },
-  { date: "2024-12-10", times: ["08:00", "10:00", "12:00", "15:00"] },
-];
+  doctorId: number;
+  onTimeSelect?: (selectedDate: Date, time: string) => void;
+  onClose?: () => void;
+}
 
-const ScheduleAppointment: React.FC<ScheduleAppointmentProps> = ({ onTimeSelect })=> {
-    
-  // **State Variables:**
-  // availableSlots holds the dummy (or fetched) available appointment data.
+const ScheduleAppointment: React.FC<ScheduleAppointmentProps> = ({ 
+  doctorId, 
+  onTimeSelect,
+  onClose 
+}) => {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
-
-  // selectedDate stores the date chosen by the user from the calendar.
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  // availableTimes will contain the list of time slots available on the selected date.
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { getAccessToken } = useAuth();
 
-  // **Fetch Available Slots:**
-  // The useEffect hook below simulates an API call to fetch available slots.
+  // Fetch doctor's availability
   useEffect(() => {
-    setTimeout(() => {
-      setAvailableSlots(dummyAvailableSlots);
-    }, 500);
-  }, []);
+    const fetchAvailability = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const token = await getAccessToken();
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/disponibilites/${doctorId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-  // **Update Available Times:**
-  // Whenever the selectedDate changes or the availableSlots data is updated,
-  // this effect converts the selected date to the "YYYY-MM-DD" format,
-  // looks for matching available slots, and updates availableTimes accordingly.
+        if (!response.ok) {
+          throw new Error("Failed to fetch availability");
+        }
+
+        const data = await response.json();
+        setAvailableSlots(data.a_venir || []);
+      } catch (err) {
+        setError("Failed to load availability. Please try again.");
+        console.error("Error fetching availability:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (doctorId) {
+      fetchAvailability();
+    }
+  }, [doctorId, getAccessToken]);
+
+  // Generate available times for selected date
   useEffect(() => {
-    if (selectedDate) {
+    if (selectedDate && availableSlots.length > 0) {
       const dateString = selectedDate.toISOString().split("T")[0];
       const slot = availableSlots.find((s) => s.date === dateString);
-      setAvailableTimes(slot ? slot.times : []);
+      
+      if (slot) {
+        const times = generateTimeSlots(slot.startTime, slot.endTime, 30);
+        setAvailableTimes(times);
+      } else {
+        setAvailableTimes([]);
+      }
     } else {
       setAvailableTimes([]);
     }
   }, [selectedDate, availableSlots]);
 
-  // **Handle Time Slot Click:**
-  // This function simulates booking an appointment by alerting the chosen time and date.
-  // In a real application, you would call an API to perform the booking.
+  const generateTimeSlots = (start: string, end: string, interval: number): string[] => {
+    const slots: string[] = [];
+    const [startHour, startMinute] = start.split(':').map(Number);
+    const [endHour, endMinute] = end.split(':').map(Number);
+    
+    let currentHour = startHour;
+    let currentMinute = startMinute;
+    
+    while (
+      currentHour < endHour || 
+      (currentHour === endHour && currentMinute < endMinute)
+    ) {
+      const timeString = `${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')}`;
+      slots.push(timeString);
+      
+      currentMinute += interval;
+      if (currentMinute >= 60) {
+        currentHour += Math.floor(currentMinute / 60);
+        currentMinute = currentMinute % 60;
+      }
+    }
+    
+    return slots;
+  };
+
   const handleTimeClick = (time: string) => {
     if (selectedDate && onTimeSelect) {
-        onTimeSelect(selectedDate, time);
-      } else {
-        // Fallback behavior if no callback is provided
-        alert(`Appointment booked on ${selectedDate?.toDateString()} at ${time}`);
-      }
-    };
+      onTimeSelect(selectedDate, time);
+    }
+  };
 
-  // **Customizing Calendar Tiles:**
-  // The tileClassName function is used by the react-calendar component to add a custom CSS class
-  // ("available-day") to any day that has available appointment slots.
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
       const dateString = date.toISOString().split("T")[0];
       if (availableSlots.some((slot) => slot.date === dateString)) {
-        return "available-day"; // This class is defined in ScheduleAppointment.css
+        return "available-day";
       }
     }
     return null;
   };
 
-  // **Render the Component:**
   return (
     <div className="container mt-4">
-      <h1>Schedule Appointment</h1>
-      {/* Calendar Component: */}
+      {loading && (
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
+      
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+        </div>
+      )}
+
       <Calendar
-        selectRange={false} // Force single date selection
-        onChange={(value, event) => {
-          // Cast the value to Date | Date[] | null
-          const v = value as Date | Date[] | null;
-          if (!v) return;
-          if (Array.isArray(v)) {
-            setSelectedDate(v[0]);
+        selectRange={false}
+        onChange={(value) => {
+          if (!value) return;
+          if (Array.isArray(value)) {
+            setSelectedDate(value[0]);
           } else {
-            setSelectedDate(v);
+            setSelectedDate(value);
           }
         }}
-        // Sets the selected date when a day is clicked
         value={selectedDate}
-        tileClassName={tileClassName} // Applies custom classes to calendar tiles
+        tileClassName={tileClassName}
+        minDate={new Date()}
       />
 
-      {/* Display Available Times for Selected Date: */}
       {selectedDate && (
         <div className="mt-4">
-          <h3>Available Times for {selectedDate.toDateString()}</h3>
+          <h4>Available Times for {selectedDate.toDateString()}</h4>
           {availableTimes.length > 0 ? (
             <div className="d-flex flex-wrap gap-2">
               {availableTimes.map((time, index) => (
@@ -118,6 +171,15 @@ const ScheduleAppointment: React.FC<ScheduleAppointmentProps> = ({ onTimeSelect 
             <p>No available times on this day.</p>
           )}
         </div>
+      )}
+
+      {onClose && (
+        <button 
+          className="btn btn-secondary mt-3"
+          onClick={onClose}
+        >
+          Cancel
+        </button>
       )}
     </div>
   );

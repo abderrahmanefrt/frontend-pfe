@@ -3,13 +3,13 @@ import { useAuth } from "../context/AuthContext";
 
 interface AppointmentRequest {
   id: string;
-  patient: {
-    nom: string;
-    prenom: string;
+  User: {
+    firstname: string;
+    lastname: string;
   };
   date: string;
-  heure: string;
-  status: "en_attente" | "accepter" | "refuser";
+  time: string;
+  status: "pending" | "accepter" | "refuser";
 }
 
 const AppointmentRequests: React.FC = () => {
@@ -49,24 +49,28 @@ const AppointmentRequests: React.FC = () => {
   const updateStatus = async (id: string, status: "accepter" | "refuser") => {
     try {
       const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/appointments/${id}/status`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.accessToken}`,
         },
         body: JSON.stringify({ status }),
       });
-
+  
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Response status:", response.status);
+        console.error("Response body:", errorText);
         throw new Error("Failed to update appointment status.");
       }
-
+  
       await fetchAppointments(); // Refresh list
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Status update failed");
     }
   };
+  
 
   return (
     <div className="container mt-4">
@@ -100,17 +104,23 @@ const AppointmentRequests: React.FC = () => {
             ) : (
               requests.map((req) => (
                 <tr key={req.id}>
-                  <td>{req.patient.nom} {req.patient.prenom}</td>
+                  <td>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
                   <td>{req.date}</td>
-                  <td>{req.heure || "Not specified"}</td>
+                  <td>{req.time || "Not specified"}</td>
                   <td>{req.status}</td>
                   <td>
-                    {req.status === "en_attente" ? (
+                    {req.status === "pending" ? (
                       <>
-                        <button className="btn btn-success btn-sm me-2" onClick={() => updateStatus(req.id, "accepter")}>
+                        <button
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => updateStatus(req.id, "accepter")}
+                        >
                           Accept
                         </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => updateStatus(req.id, "refuser")}>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => updateStatus(req.id, "refuser")}
+                        >
                           Reject
                         </button>
                       </>

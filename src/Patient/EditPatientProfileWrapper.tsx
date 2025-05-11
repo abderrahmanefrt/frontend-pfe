@@ -2,21 +2,26 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EditPatientProfile from "./EditPatientProfile";
 import { useAuth } from "../context/AuthContext";
-import { User } from "./EditPatientProfile"; // Make sure the User interface is exported if needed
+import { User } from "../context/AuthContext"; // assure-toi que User est exporté
 
 const EditPatientProfileWrapper: React.FC = () => {
-  const { user, updateUser } = useAuth(); // Assume user is an object with id, name, email, phone
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  // Callback when the profile is updated
-  const handleUpdate = (updatedUser: User) => {
+  const handleUpdate = (updatedUserData: Partial<User>) => {
+    if (!user) return;
+
+    const updatedUser: User = {
+      ...user,
+      ...updatedUserData,
+      accessToken: user.accessToken,
+      refreshToken: user.refreshToken,
+    };
+
     updateUser(updatedUser);
-    // Navigate back to the patient profile or user management view depending on the context.
-    // For patient, we might return to the profile page:
     navigate("/patient/profile");
   };
 
-  // Callback when the editing is cancelled
   const handleCancel = () => {
     navigate("/patient/profile");
   };
@@ -27,7 +32,14 @@ const EditPatientProfileWrapper: React.FC = () => {
 
   return (
     <EditPatientProfile
-      initialUser={user}
+      initialData={{
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        phone: user.phone || "",
+        image: user.image || "",
+        biography: user.biography || "",
+      }}
       onUpdate={handleUpdate}
       onCancel={handleCancel}
     />

@@ -1,144 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 interface Appointment {
   id: number;
-  patientName: string;
-  doctorName: string;
   date: string;
   time: string;
-  status: "pending" | "approved" | "cancelled" | "completed";
+  User: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+  };
+  Medecin: {
+    id: number;
+    firstname: string;
+    lastname: string;
+  };
 }
 
-const AppointmentManagement: React.FC = () => {
+const AdminAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { user } = useAuth();
 
-  // Simulate fetching appointments data from an API
   useEffect(() => {
-    const dummyAppointments: Appointment[] = [
-      {
-        id: 1,
-        patientName: "Alice Johnson",
-        doctorName: "Dr. Smith",
-        date: "2025-01-10",
-        time: "09:00",
-        status: "pending",
-      },
-      {
-        id: 2,
-        patientName: "Bob Smith",
-        doctorName: "Dr. Johnson",
-        date: "2025-01-11",
-        time: "10:30",
-        status: "approved",
-      },
-      {
-        id: 3,
-        patientName: "Charlie Brown",
-        doctorName: "Dr. Brown",
-        date: "2025-01-12",
-        time: "14:00",
-        status: "completed",
-      },
-    ];
+    const fetchAppointments = async () => {
+      try {
+        const res = await fetch('https://pfe-project-2nrq.onrender.com/api/appointments', {
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        });
 
-    // Simulate API call delay
-    setTimeout(() => {
-      setAppointments(dummyAppointments);
-      setLoading(false);
-    }, 1000);
-  }, []);
+        const data = await res.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error fetching appointments', error);
+      }
+    };
 
-  // Function to update the status of an appointment
-  const updateStatus = (id: number, newStatus: Appointment["status"]) => {
-    setAppointments((prevAppointments) =>
-      prevAppointments.map((appointment) =>
-        appointment.id === id
-          ? { ...appointment, status: newStatus }
-          : appointment
-      )
-    );
-    alert(`Appointment ${id} updated to ${newStatus}`);
-  };
+    fetchAppointments();
+  }, [user]);
 
   return (
     <div className="container mt-4">
-      <h2>Appointment Management</h2>
-      {loading ? (
-        <p>Loading appointments...</p>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Status</th>
-              <th>Actions</th>
+      <h3>All Upcoming Appointments</h3>
+      <table className="table table-bordered mt-3">
+        <thead className="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {appointments.map((appt) => (
+            <tr key={appt.id}>
+              <td>{new Date(appt.date).toLocaleDateString()}</td>
+              <td>{appt.time}</td>
+              <td>{appt.User.firstname} {appt.User.lastname} ({appt.User.email})</td>
+              <td>{appt.Medecin.firstname} {appt.Medecin.lastname}</td>
             </tr>
-          </thead>
-          <tbody>
-            {appointments.map((appointment) => (
-              <tr key={appointment.id}>
-                <td>{appointment.id}</td>
-                <td>{appointment.patientName}</td>
-                <td>{appointment.doctorName}</td>
-                <td>{appointment.date}</td>
-                <td>{appointment.time}</td>
-                <td>{appointment.status}</td>
-                <td>
-                  {appointment.status === "pending" && (
-                    <>
-                      <button
-                        className="btn btn-success btn-sm me-2"
-                        onClick={() => updateStatus(appointment.id, "approved")}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() =>
-                          updateStatus(appointment.id, "cancelled")
-                        }
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                  {appointment.status === "approved" && (
-                    <>
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() =>
-                          updateStatus(appointment.id, "completed")
-                        }
-                      >
-                        Complete
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() =>
-                          updateStatus(appointment.id, "cancelled")
-                        }
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                  {appointment.status === "cancelled" && (
-                    <span>No actions available</span>
-                  )}
-                  {appointment.status === "completed" && <span>Completed</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-export default AppointmentManagement;
+export default AdminAppointments;
