@@ -20,6 +20,10 @@ interface Doctor {
   latitude?: number;
   longitude?: number;
   rating?: number;
+  photo?: string;
+
+  
+
   availabilities?: Availability[];
 }
 
@@ -228,6 +232,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
                 ]}
                 doctorName={`${doctor.firstname} ${doctor.lastname}`}
                 rating={doctor.rating || 0}
+                photo={doctor.photo}
               />
             </div>
           ))

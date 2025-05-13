@@ -133,12 +133,22 @@ const AdminDashboard: React.FC = () => {
         >
           Manage Pending Doctors
         </button>
+        
+
         <button
           className="btn btn-outline-primary"
           onClick={() => navigate('/admin/doctors-list')}
         >
           View Accepted Doctors
         </button>
+        <button
+  className="btn btn-outline-danger"
+  onClick={() => navigate('/admin/doctor/22/reviews')} // exemple avec ID 1
+>
+  Manage Comments
+</button>
+
+
         <button className="btn btn-success" onClick={() => navigate('/admin/users')}>
           View patients
         </button>

@@ -31,7 +31,7 @@ const DoctorDashboard: React.FC = () => {
         }
 
         const data = await response.json();
-        login({ ...user, ...data }); // Mise à jour du profil utilisateur
+        login({ ...user, ...data });
       } catch (err) {
         console.error("Error fetching doctor profile:", err);
         setError("Échec du chargement du profil");
@@ -43,57 +43,108 @@ const DoctorDashboard: React.FC = () => {
     fetchDoctorProfile();
   }, [user?.accessToken]);
 
-  if (loading) return <div className="text-center mt-5">Chargement du tableau de bord...</div>;
-  if (error) return <div className="alert alert-danger mt-3 text-center">{error}</div>;
-  if (!user) return <div>Redirection vers la connexion...</div>;
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+      <span className="ms-3">Chargement du tableau de bord...</span>
+    </div>
+  );
+
+  if (error) return (
+    <div className="container mt-5">
+      <div className="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Erreur !</strong> {error}
+        <button type="button" className="btn-close" onClick={() => setError(null)}></button>
+      </div>
+    </div>
+  );
+
+  if (!user) return null;
 
   return (
-    <div className="container mt-5">
+    <div className="container-fluid py-4">
       <RefreshToken />
-
-      <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+      
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4 px-3 py-3 bg-white rounded-3 shadow-sm">
         <div>
-          <h2 className="mb-1">Bienvenue Dr. {user.firstname} {user.lastname}</h2>
-          <p className="mb-0"><strong>Spécialité :</strong> {user.specialite}</p>
-          <p className="mb-0"><strong>Email :</strong> {user.email}</p>
+          <h2 className="mb-1 fw-bold text-primary">Tableau de Bord Médical</h2>
+          <div className="d-flex flex-wrap gap-3 mt-2">
+            <span className="badge bg-light text-dark fs-6">
+              <i className="bi bi-person-fill me-2"></i>
+              Dr. {user.firstname} {user.lastname}
+            </span>
+            <span className="badge bg-light text-dark fs-6">
+              <i className="bi bi-bandaid-fill me-2"></i>
+              {user.specialite}
+            </span>
+            <span className="badge bg-light text-dark fs-6">
+              <i className="bi bi-envelope-fill me-2"></i>
+              {user.email}
+            </span>
+          </div>
         </div>
         <button
-          className="btn btn-outline-danger"
+          className="btn btn-outline-danger d-flex align-items-center"
           onClick={() => {
             logout();
             navigate("/login");
           }}
         >
+          <i className="bi bi-box-arrow-right me-2"></i>
           Déconnexion
         </button>
       </div>
 
-      <div className="row">
-        <div className="col-md-6 mb-4">
-          <div className="card h-100 shadow-sm">
+      {/* Main Content */}
+      <div className="row g-4">
+        {/* Schedule Card */}
+        <div className="col-lg-6">
+          <div className="card border-0 h-100 shadow-sm">
+            <div className="card-header bg-white border-0 py-3">
+              <h4 className="card-title mb-0 d-flex align-items-center">
+                <i className="bi bi-calendar-check me-2 text-primary"></i>
+                Votre Planning
+              </h4>
+            </div>
             <div className="card-body">
-              <h4 className="card-title mb-3">Votre Planning</h4>
               <DoctorSchedule />
             </div>
           </div>
         </div>
 
-        <div className="col-md-6 mb-4">
-          <div className="card h-100 shadow-sm">
+        {/* Appointments Card */}
+        <div className="col-lg-6">
+          <div className="card border-0 h-100 shadow-sm">
+            <div className="card-header bg-white border-0 py-3">
+              <h4 className="card-title mb-0 d-flex align-items-center">
+                <i className="bi bi-clipboard2-pulse me-2 text-primary"></i>
+                Demandes de Rendez-vous
+              </h4>
+            </div>
             <div className="card-body">
-              <h4 className="card-title mb-3">Demandes de Rendez-vous</h4>
               <AppointmentRequests />
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Card */}
+        <div className="col-12">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-0 py-3">
+              <h4 className="card-title mb-0 d-flex align-items-center">
+                <i className="bi bi-person-badge me-2 text-primary"></i>
+              </h4>
+            </div>
+            <div className="card-body">
+              <DoctorProfile doctor={user} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card mt-4 shadow-sm">
-        <div className="card-body">
-          <h4 className="card-title mb-3">Profil du Médecin</h4>
-          <DoctorProfile doctor={user} />
-        </div>
-      </div>
     </div>
   );
 };

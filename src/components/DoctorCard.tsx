@@ -7,6 +7,7 @@ interface DoctorCardProps {
   doctorInfo: ListGroupItem[];
   doctorId: number;
   doctorName: string;
+  photo?: string;
   rating?: number;
   onScheduleClick?: (doctorId: number) => void;
 }
@@ -15,6 +16,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   doctorInfo,
   doctorId,
   doctorName,
+  photo,
   rating = 0,
   onScheduleClick
 }) => {
@@ -31,11 +33,15 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   return (
     <div className="card h-100">
       <img
-        src="/doctor-placeholder.jpg"
-        className="card-img-top"
-        alt={doctorName}
-        style={{ height: "200px", objectFit: "cover" }}
-      />
+  src={
+    photo
+      ? `${import.meta.env.VITE_API_URL}/${photo.replace(/\\/g, '/')}`
+      : "/doctor-placeholder.jpg"
+  }
+  className="card-img-top"
+  alt={doctorName}
+  style={{ height: "200px", objectFit: "cover", borderRadius: "8px" }}
+/>
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{doctorName}</h5>
         <ListGroup

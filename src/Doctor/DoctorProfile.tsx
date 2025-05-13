@@ -22,20 +22,12 @@ const DoctorProfile: React.FC<{ doctor: DoctorDetails }> = ({ doctor }) => {
   const navigate = useNavigate();
 
   const getImageSource = (): string => {
-    try {
-      if (doctor.photoUrl) return doctor.photoUrl;
-
-      if (doctor.photo) {
-        const baseUrl = import.meta.env.VITE_API_URL || 'https://pfe-project-2nrq.onrender.com';
-        return `${baseUrl}/uploads/${doctor.photo.replace(/^\/+/, '')}`;
-      }
-
-      return "/default-avatar.png";
-    } catch (error) {
-      console.error("Error determining image source:", error);
-      return "/default-avatar.png";
+    if (doctor.photo) {
+      return `${import.meta.env.VITE_API_URL}/${doctor.photo.replace(/\\/g, '/')}`;
     }
+    return "/default-avatar.png";
   };
+  
 
   const formatFee = (fee?: number): string => {
     if (fee === undefined || fee === null) return "Not specified";

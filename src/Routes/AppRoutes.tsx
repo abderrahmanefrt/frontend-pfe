@@ -22,6 +22,8 @@ import ScheduleAppointmentWrapper from "../Patient/ScheduleAppointmentWrapper";
 import AccountSettingsWrapper from "../Patient/AccountSettingsWrapper";
 import BookAppointmentPage from "../Patient/BookAppointmentPage"; 
 import DoctorProfilePage from "../Patient/DoctorProfilePage";
+import DoctorReviewWrapper from "../Patient/DoctorReviewWrapper";
+
 
 // Doctor routes
 import DoctorDashboard from "../Doctor/DoctorDashboard";
@@ -38,6 +40,7 @@ import ReviewsManagement from "../Admin/ReviewsManagement";
 import AdminEditPatientProfileWrapper from "../Admin/AdminEditPatientProfileWrapper";
 import AdminEditDoctorWrapper from "../Admin/AdminEditDoctorWrapper";
 import DoctorsList from "../Admin/DoctorsList";
+import ManageDoctorReviews from "../Admin/ReviewsManagement";
 
 function AppRoutes() {
   return (
@@ -61,6 +64,8 @@ function AppRoutes() {
           <PrivateRoute element={<Dashboard />} allowedRoles={["user"]} />
         }
       />
+<Route path="/admin/doctor/:doctorId/reviews" element={<ManageDoctorReviews />} />
+
       <Route
         path="/patient/profile"
         element={
@@ -160,6 +165,8 @@ function AppRoutes() {
           />
         }
       />
+      <Route path="/admin/avis/:doctorId" element={<ManageDoctorReviews />} />
+
       <Route
         path="/admin/users"
         element={

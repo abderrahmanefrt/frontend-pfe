@@ -25,11 +25,22 @@ interface Availability {
   endTime: string;
 }
 
+interface Avis {
+  id: number;
+  note: number;
+  commentaire: string;
+  User: {
+    firstname: string;
+  };
+}
+
 const DoctorProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getAccessToken } = useAuth();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [avisList, setAvisList] = useState<Avis[]>([]);
+  const [visibleCount, setVisibleCount] = useState(3);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -72,12 +83,36 @@ const DoctorProfilePage: React.FC = () => {
         setDoctor(data);
       } catch (error: any) {
         setError(error.message || "Error fetching doctor profile");
+      }
+    };
+
+    const fetchAvis = async () => {
+      try {
+        const token = await getAccessToken();
+        const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/avis/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) throw new Error("Erreur lors du chargement des avis");
+        const data = await response.json();
+        setAvisList(data);
+      } catch (error: any) {
+        console.error(error.message);
+        setError("Failed to load reviews");
       } finally {
         setLoading(false);
       }
     };
+
     fetchDoctorProfile();
+    fetchAvis();
   }, [id, getAccessToken, navigate]);
+
+  const handleShowMore = () => {
+    setVisibleCount((prev) => prev + 3);
+  };
 
   if (loading) {
     return (
@@ -141,6 +176,7 @@ const DoctorProfilePage: React.FC = () => {
 
           <hr />
 
+          {/* Contact Info d'abord */}
           <div className="row mt-4">
             <div className="col-md-6">
               <h4 className="text-dark">Contact Information</h4>
@@ -169,14 +205,53 @@ const DoctorProfilePage: React.FC = () => {
                 </ListGroup.Item>
               </ListGroup>
             </div>
+
+            {/* Avis à droite */}
+            <div className="col-md-6 mt-4 mt-md-0">
+              <h4 className="text-dark mb-3">Patient Reviews</h4>
+              {avisList.length === 0 ? (
+                <p className="text-muted">No reviews yet.</p>
+              ) : (
+                <>
+                  <ListGroup>
+                    {avisList.slice(0, visibleCount).map((avis) => (
+                      <ListGroup.Item key={avis.id}>
+                        <strong>{avis.User?.firstname || "Anonymous"}</strong> rated{" "}
+                        <Badge bg="warning" text="dark">
+                          {avis.note}/5
+                        </Badge>
+                        <p className="mb-1">{avis.commentaire}</p>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                  {visibleCount < avisList.length && (
+                    <div className="mt-2 text-center">
+                      <Button variant="outline-primary" onClick={handleShowMore}>
+                        Voir plus d'avis
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between mt-4">
             <Button variant="secondary" onClick={() => navigate('/doctorSearch')}>
               Back to Doctors List
             </Button>
-            <Button variant="primary">
-              Book an Appointment
+            <Button 
+  variant="primary"
+  onClick={() => navigate(`/appointments/${doctor.id}`)}
+>
+  Book an Appointment
+</Button>
+
+            <Button
+              variant="success"
+              onClick={() => navigate(`/doctor/${doctor.id}/review`)}
+            >
+              Leave a Review
             </Button>
           </div>
         </Card.Body>
