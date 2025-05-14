@@ -30,7 +30,11 @@ const BookAppointmentPage = () => {
         );
         const data = await response.json();
         if (response.ok) {
-          setBookedTimes(data.bookedTimes || []);
+          // Convertit "11:00:00" => "11:00"
+          const formattedTimes = (data.bookedTimes || []).map((t: string) =>
+            t.slice(0, 5)
+          );
+          setBookedTimes(formattedTimes);
         } else {
           console.error(data.message);
         }
@@ -40,6 +44,7 @@ const BookAppointmentPage = () => {
     };
     fetchBookedTimes();
   }, [medecinId, date, getAccessToken]);
+  
 
   const generateTimeSlots = (start: string, end: string) => {
     const result = [];

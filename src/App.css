@@ -1,0 +1,50 @@
+/* Add to your main CSS file */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+}
+
+.nav-link:hover span {
+  width: 70% !important;
+}
+
+.nav-link.active span {
+  width: 70% !important;
+}
+
+.dropdown-menu {
+  border-radius: 0.5rem !important;
+}
+body {
+  padding-top: 56px; /* Height of your navbar */
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 72px; /* Larger navbar on desktop */
+  }
+}
+/* Add to your global CSS */
+.hover-shadow:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.hero-section {
+  transition: margin-top 0.3s ease;
+}
+/* Correction globale pour toutes les pages */
+body {
+  padding-top: 72px !important; /* Hauteur de votre navbar */
+}
+
+.hero-section {
+  margin-top: -72px;
+  height: 100vh;
+}
+.star-rating .star {
+  font-size: 1.5rem; /* Ajuste la taille des étoiles avec du CSS */
+}

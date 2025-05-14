@@ -103,9 +103,11 @@ function AppRoutes() {
       <Route path="/book-appointment/:medecinId/:availabilityId" element={<BookAppointmentPage />} />
 
       <Route path="/users/doctor/:id" element={<DoctorProfilePage />} />
+      <Route path="/doctor/:id/review" element={<DoctorReviewWrapper />} />
 
-      <Route
-        path="/doctorSearch"
+    
+
+        <Route path="/doctorSearch"
         element={
           <PrivateRoute
             element={<DoctorSearchWithCalendar />}

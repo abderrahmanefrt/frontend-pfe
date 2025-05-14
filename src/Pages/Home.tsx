@@ -4,149 +4,195 @@ import { Link } from "react-router-dom";
 const Home: React.FC = () => {
   return (
     <div className="container-fluid p-0">
-      {/* Hero Section */}
-      <div
+      {/* Hero Section with navbar spacing */}
+      <div 
         className="hero-section d-flex align-items-center justify-content-center text-center"
         style={{
           backgroundImage: "url('/assets/hero-medical.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          height: "80vh",
+          height: "calc(100vh - 56px)", // Adjust for navbar height
+          minHeight: "500px",
           color: "white",
-          position: "relative"
+          position: "relative",
+          marginTop: "56px" // Push content below fixed navbar
         }}
       >
-        {/* Optional overlay for better contrast */}
+        {/* Dark overlay for better text contrast */}
         <div 
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)"
-          }}
+          className="bg-dark opacity-50 position-absolute top-0 start-0 w-100 h-100"
         ></div>
-        <div className="z-1 px-3">
+        
+        <div className="z-1 px-3" style={{ maxWidth: "800px" }}>
           <h1 className="display-4 fw-bold mb-4">Manage Your Medical Appointments Online</h1>
-          <p className="lead mb-4">
+          <p className="lead mb-4 fs-4">
             Find top doctors, book appointments quickly, and manage your health with ease.
           </p>
-          <div className="mt-4">
-            <Link to="/signup" className="btn btn-primary btn-lg me-3">
+          <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
+            <Link to="/signup" className="btn btn-primary btn-lg px-4 py-3 fw-bold">
               Get Started
             </Link>
-            <Link to="/login" className="btn btn-outline-light btn-lg">
+            <Link to="/login" className="btn btn-outline-light btn-lg px-4 py-3 fw-bold">
               Log In
             </Link>
-            
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="container mt-5">
-  <h2 className="text-center mb-5">Why Choose Our Platform?</h2>
-  <div className="row">
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <i className="bi bi-clock-history display-4 text-primary mb-3"></i>
-          <h4 className="card-title">Fast Booking</h4>
-          <p className="card-text">Book appointments quickly with our streamlined process.</p>
+      <div className="container py-5 my-4">
+        <h2 className="text-center mb-5 display-5 fw-bold">Why Choose Our Platform?</h2>
+        <div className="row g-4">
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+              <div className="card-body text-center p-4">
+                <i className="bi bi-clock-history display-4 text-primary mb-3"></i>
+                <h4 className="card-title fw-bold">Fast Booking</h4>
+                <p className="card-text text-muted">
+                  Book appointments in minutes with our streamlined process.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+              <div className="card-body text-center p-4">
+                <i className="bi bi-person-check display-4 text-success mb-3"></i>
+                <h4 className="card-title fw-bold">Trusted Doctors</h4>
+                <p className="card-text text-muted">
+                  Verified professionals with detailed profiles and patient reviews.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+              <div className="card-body text-center p-4">
+                <i className="bi bi-shield-lock display-4 text-danger mb-3"></i>
+                <h4 className="card-title fw-bold">Secure & Private</h4>
+                <p className="card-text text-muted">
+                  HIPAA-compliant platform protecting your health information.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <i className="bi bi-person-check display-4 text-success mb-3"></i>
-          <h4 className="card-title">Trusted Doctors</h4>
-          <p className="card-text">Access detailed profiles and reviews to find the best doctors.</p>
-        </div>
-      </div>
-    </div>
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <i className="bi bi-shield-lock display-4 text-danger mb-3"></i>
-          <h4 className="card-title">Secure &amp; Reliable</h4>
-          <p className="card-text">
-            Your personal data is protected with state-of-the-art security.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 
       {/* How It Works Section */}
-      <div className="container mt-5">
-  <h2 className="text-center mb-5">How It Works</h2>
-  <div className="row">
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <h4 className="card-title">1. Search</h4>
-          <p className="card-text">
-            Find a doctor by specialty, location, and availability.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <h4 className="card-title">2. Book</h4>
-          <p className="card-text">
-            Choose a time slot that fits your schedule and book instantly.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div className="col-md-4 mb-4">
-      <div className="card h-100 border-0 shadow-sm">
-        <div className="card-body text-center">
-          <h4 className="card-title">3. Confirm</h4>
-          <p className="card-text">
-            Receive confirmation and reminders for your upcoming appointment.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-      {/* Testimonials Section (Optional) */}
-      <div className="container mt-5 mb-5">
-        <h2 className="text-center mb-4">What Our Users Say</h2>
-        <div className="row">
-          <div className="col-md-4">
-            <div className="card p-3">
-              <p className="card-text">"This platform made booking my appointment so easy and fast!"</p>
-              <p className="fw-bold mb-0">— Sarah M.</p>
+      <div className="bg-light py-5 my-4">
+        <div className="container">
+          <h2 className="text-center mb-5 display-5 fw-bold">How It Works</h2>
+          <div className="row g-4">
+            <div className="col-md-4">
+              <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div className="card-body text-center p-4">
+                  <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style={{width: '50px', height: '50px'}}>
+                    <span className="fs-4 fw-bold">1</span>
+                  </div>
+                  <h4 className="card-title fw-bold mt-3">Search</h4>
+                  <p className="card-text text-muted">
+                    Find specialists by name, location, or specialty.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card p-3">
-              <p className="card-text">"I love the detailed doctor profiles and the quick booking process."</p>
-              <p className="fw-bold mb-0">— John D.</p>
+            <div className="col-md-4">
+              <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div className="card-body text-center p-4">
+                  <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style={{width: '50px', height: '50px'}}>
+                    <span className="fs-4 fw-bold">2</span>
+                  </div>
+                  <h4 className="card-title fw-bold mt-3">Book</h4>
+                  <p className="card-text text-muted">
+                    Select preferred time and confirm with one click.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card p-3">
-              <p className="card-text">"A highly reliable platform. My go-to for all medical appointments."</p>
-              <p className="fw-bold mb-0">— Emily R.</p>
+            <div className="col-md-4">
+              <div className="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div className="card-body text-center p-4">
+                  <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style={{width: '50px', height: '50px'}}>
+                    <span className="fs-4 fw-bold">3</span>
+                  </div>
+                  <h4 className="card-title fw-bold mt-3">Attend</h4>
+                  <p className="card-text text-muted">
+                    Get reminders and attend your appointment.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer Section */}
-      {/*<footer className="bg-dark text-white text-center py-3">
-        <p>&copy; {new Date().getFullYear()} Medical Appointments. All rights reserved.</p>
-      </footer>*/}
+      {/* Testimonials Section */}
+      <div className="container py-5 my-4">
+        <h2 className="text-center mb-5 display-5 fw-bold">Patient Experiences</h2>
+        <div className="row g-4">
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm p-4 hover-shadow transition-all">
+              <div className="d-flex align-items-center mb-3">
+                <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style={{width: '50px', height: '50px'}}>
+                  <i className="bi bi-person-fill fs-5"></i>
+                </div>
+                <h5 className="mb-0 fw-bold">Sarah M.</h5>
+              </div>
+              <p className="card-text text-muted">
+                "Saved me hours of phone calls. Booked my dermatology appointment in under 2 minutes!"
+              </p>
+              <div className="text-warning">
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm p-4 hover-shadow transition-all">
+              <div className="d-flex align-items-center mb-3">
+                <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style={{width: '50px', height: '50px'}}>
+                  <i className="bi bi-person-fill fs-5"></i>
+                </div>
+                <h5 className="mb-0 fw-bold">John D.</h5>
+              </div>
+              <p className="card-text text-muted">
+                "The doctor profiles with reviews helped me choose the perfect cardiologist for my needs."
+              </p>
+              <div className="text-warning">
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-half"></i>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 border-0 shadow-sm p-4 hover-shadow transition-all">
+              <div className="d-flex align-items-center mb-3">
+                <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style={{width: '50px', height: '50px'}}>
+                  <i className="bi bi-person-fill fs-5"></i>
+                </div>
+                <h5 className="mb-0 fw-bold">Emily R.</h5>
+              </div>
+              <p className="card-text text-muted">
+                "The reminder system is fantastic. Never missed an appointment since I started using this service."
+              </p>
+              <div className="text-warning">
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+                <i className="bi bi-star-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -142,8 +142,9 @@ const AdminDashboard: React.FC = () => {
           View Accepted Doctors
         </button>
         <button
+        
   className="btn btn-outline-danger"
-  onClick={() => navigate('/admin/doctor/22/reviews')} // exemple avec ID 1
+  onClick={() => navigate('"/admin/avis/:doctorId')} // exemple avec ID 1
 >
   Manage Comments
 </button>
