@@ -23,7 +23,7 @@ import AccountSettingsWrapper from "../Patient/AccountSettingsWrapper";
 import BookAppointmentPage from "../Patient/BookAppointmentPage"; 
 import DoctorProfilePage from "../Patient/DoctorProfilePage";
 import DoctorReviewWrapper from "../Patient/DoctorReviewWrapper";
-
+import RescheduleAppointment from "../Patient/RescheduleAppointment";
 
 // Doctor routes
 import DoctorDashboard from "../Doctor/DoctorDashboard";
@@ -72,6 +72,8 @@ function AppRoutes() {
           <PrivateRoute element={<PatientProfile />} allowedRoles={["user"]} />
         }
       />
+              <Route path="/reschedule/:id" element={<RescheduleAppointment />} />
+
       <Route
         path="/patient/edit-profile"
         element={
