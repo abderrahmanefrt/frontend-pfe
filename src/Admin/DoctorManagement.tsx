@@ -12,7 +12,7 @@ const DoctorManagement = () => {
     const getPendingDoctors = async () => {
       try {
         const response = await fetch(
-          "https://pfe-project-2nrq.onrender.com/api/admin/medecins-pending",
+          `${import.meta.env.VITE_API_URL}/api/admin/medecins-pending`,
           {
             headers: {
               Authorization: `Bearer ${user?.accessToken}`,
@@ -41,7 +41,7 @@ const DoctorManagement = () => {
   const handleApprove = async (id: number) => {
     try {
       const res = await fetch(
-        `https://pfe-project-2nrq.onrender.com/api/admin/medecins/${id}/approve`,
+        `${import.meta.env.VITE_API_URL}/api/admin/medecins/${id}/approve`,
         {
           method: "PUT",
           headers: {
@@ -60,7 +60,7 @@ const DoctorManagement = () => {
   const handleReject = async (id: number) => {
     try {
       const res = await fetch(
-        `https://pfe-project-2nrq.onrender.com/api/admin/medecins/${id}/reject`,
+        `${import.meta.env.VITE_API_URL}/api/admin/medecins/${id}/reject`,
         {
           method: "PUT",
           headers: {
@@ -151,7 +151,7 @@ const DoctorManagement = () => {
                   <p>
                     <strong>Document: </strong>
                     <a
-                      href={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.document.replace(/\\/g, '/')}`}
+                      href={`${import.meta.env.VITE_API_URL}/${selectedDoctor.document.replace(/\\/g, '/')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -168,7 +168,7 @@ const DoctorManagement = () => {
                     <strong>Photo:</strong>
                     <div className="mt-2">
                       <img
-                        src={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.photo.replace(/\\/g, '/')}`}
+                        src={`${import.meta.env.VITE_API_URL}/${selectedDoctor.photo.replace(/\\/g, '/')}`}
                         alt="Doctor"
                         style={{ width: "150px", height: "150px", objectFit: "cover" }}
                       />

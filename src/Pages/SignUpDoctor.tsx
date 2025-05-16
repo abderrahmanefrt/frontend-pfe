@@ -39,7 +39,7 @@ const SignUpDoctor: React.FC = () => {
     if (document) formData.append("document", document);
 
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/auth/medecin/register", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/medecin/register`, {
         method: "POST",
         body: formData,
       });

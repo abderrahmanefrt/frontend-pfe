@@ -25,7 +25,7 @@ const AdminAppointments: React.FC = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await fetch('https://pfe-project-2nrq.onrender.com/api/appointments', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments`, {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },

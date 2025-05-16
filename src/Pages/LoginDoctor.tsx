@@ -17,7 +17,7 @@ const LoginDoctor: React.FC = () => {
     setError("");
 
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/auth/medecin/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/medecin/login` ,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

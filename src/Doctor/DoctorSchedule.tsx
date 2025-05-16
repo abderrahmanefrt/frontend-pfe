@@ -25,7 +25,7 @@ const DoctorSchedule: React.FC = () => {
   const fetchSlots = async () => {
     try {
       const response = await fetch(
-        "https://pfe-project-2nrq.onrender.com/api/medecin/disponibilites",
+        `${import.meta.env.VITE_API_URL}/api/medecin/disponibilites`,
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
@@ -86,7 +86,7 @@ const DoctorSchedule: React.FC = () => {
 
     try {
       const response = await fetch(
-        "https://pfe-project-2nrq.onrender.com/api/medecin/disponibilites",
+        `${import.meta.env.VITE_API_URL}/api/medecin/disponibilites`,
         {
           method: "POST",
           headers: {
@@ -128,7 +128,7 @@ const DoctorSchedule: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://pfe-project-2nrq.onrender.com/api/medecin/disponibilites/${slotId}`,
+        `${import.meta.env.VITE_API_URL}/api/medecin/disponibilites/${slotId}`,
         {
           method: "DELETE",
           headers: {

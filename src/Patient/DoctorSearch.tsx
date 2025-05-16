@@ -6,7 +6,7 @@ import MapModal from "../components/MapModal";
 import { Spinner, Alert } from "react-bootstrap";
 
 interface Availability {
-  date: string; // Format: YYYY-MM-DD
+  date: string;
   startTime: string;
   endTime: string;
 }
@@ -21,9 +21,6 @@ interface Doctor {
   longitude?: number;
   rating?: number;
   photo?: string;
-
-  
-
   availabilities?: Availability[];
 }
 
@@ -31,10 +28,8 @@ const DoctorSearchWithCalendar: React.FC = () => {
   const { getAccessToken } = useAuth();
   const [specialty, setSpecialty] = useState("");
   const [displayLocation, setDisplayLocation] = useState("");
-  const [locationCoords, setLocationCoords] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [firstname, setFirstname] = useState("");
+  const [locationCoords, setLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [minRating, setMinRating] = useState(0);
   const [filterDate, setFilterDate] = useState<string | null>(null);
   const [filterTime, setFilterTime] = useState<string | null>(null);
@@ -43,64 +38,81 @@ const DoctorSearchWithCalendar: React.FC = () => {
   const [error, setError] = useState("");
   const [showMapModal, setShowMapModal] = useState(false);
 
-
   const fetchDoctors = async () => {
     try {
       setLoading(true);
       setError("");
-  
+
       const params = new URLSearchParams();
       let baseUrl = "";
-  
-      // Cas de recherche par localisation
+
       if (locationCoords) {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/nearMedecin`;
         params.append("latitude", locationCoords.lat.toString());
         params.append("longitude", locationCoords.lng.toString());
-        params.append("distance", "15"); // Tu peux ajuster la distance si nécessaire
-      } 
-      // Cas de recherche par spécialité ou autre filtre
-      else if (specialty || minRating || filterDate || filterTime) {
+        params.append("distance", "15");
+      } else if (specialty || firstname || minRating || filterDate || filterTime) {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/SearchMedecin`;
-  
         if (specialty) params.append("specialite", specialty);
+        if (firstname) params.append("firstname", firstname);
         params.append("page", "1");
         params.append("limit", "20");
-      } 
-      // Cas de récupération de tous les médecins approuvés
-      else {
+      }
+       else {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/users/listofdoctors`;
       }
-  
+
       const finalUrl = `${baseUrl}?${params.toString()}`;
-      console.log("Final request URL:", finalUrl);
-  
       const token = await getAccessToken();
+
       const response = await fetch(finalUrl, {
-        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "API request failed");
       }
-  
+
       const data = await response.json();
-      console.log("API response data:", data);
-  
       const medecins = data.medecins || data || [];
-  
-      // Filtrer les médecins par la note minimum si nécessaire
+
+      const doctorsWithAvailabilityAndRating = await Promise.all(
+        medecins.map(async (doc: any) => {
+          try {
+            const [availRes, ratingRes] = await Promise.all([
+              fetch(`${import.meta.env.VITE_API_URL}/api/disponibilites/${doc.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+              fetch(`${import.meta.env.VITE_API_URL}/api/avis/rating/${doc.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            ]);
+
+            const availData = await availRes.json();
+            const ratingData = await ratingRes.json();
+
+            return {
+              ...doc,
+              availabilities: availData.a_venir || [],
+              rating: parseFloat(ratingData.averageRating || "0.0"),
+            };
+          } catch (err) {
+            console.warn("Erreur récupération données médecin", doc.id);
+            return { ...doc, availabilities: [], rating: 0 };
+          }
+        })
+      );
+
       const filteredByRating = minRating
-        ? medecins.filter((doc: any) => parseFloat(doc.rating || 0) >= minRating)
-        : medecins;
-  
+        ? doctorsWithAvailabilityAndRating.filter((doc) => (doc.rating || 0) >= minRating)
+        : doctorsWithAvailabilityAndRating;
+
       setDoctors(filteredByRating);
-    }  catch (error: any) {
+    } catch (error: any) {
       console.error("Erreur lors de la récupération des médecins:", error);
       setError(error.message || "Failed to load doctors");
       setDoctors([]);
@@ -108,13 +120,10 @@ const DoctorSearchWithCalendar: React.FC = () => {
       setLoading(false);
     }
   };
-  
-  
-  
 
   useEffect(() => {
     fetchDoctors();
-  }, [specialty, locationCoords, filterDate, filterTime]);
+  }, [specialty,firstname, locationCoords, filterDate, filterTime]);
 
   const handleTimeSelect = (date: Date, time: string) => {
     const dateStr = date.toISOString().split("T")[0];
@@ -123,7 +132,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
   };
 
   const openMap = () => setShowMapModal(true);
-  
+
   const handleMapConfirm = (
     coords: { lat: number; lng: number },
     place: string
@@ -148,6 +157,17 @@ const DoctorSearchWithCalendar: React.FC = () => {
               placeholder="e.g., Cardiology"
             />
           </div>
+          <div className="col-md-3">
+  <label className="form-label">First Name</label>
+  <input
+    type="text"
+    className="form-control"
+    value={firstname}
+    onChange={(e) => setFirstname(e.target.value)}
+    placeholder="e.g., Ahmed"
+  />
+</div>
+
           <div className="col-md-3">
             <label className="form-label">Location</label>
             <div className="input-group">
@@ -214,9 +234,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
       )}
 
       {error && (
-        <Alert variant="danger">
-          {error}
-        </Alert>
+        <Alert variant="danger">{error}</Alert>
       )}
 
       <h2>Results</h2>

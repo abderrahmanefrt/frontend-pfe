@@ -81,7 +81,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
     const fetchAverageRating = async () => {
       try {
         const response = await fetch(
-          `https://pfe-project-2nrq.onrender.com/api/avis/medecin/${doctorId}/average-rating`
+          `${import.meta.env.VITE_API_URL}/api/avis/medecin/${doctorId}/average-rating`
         );
         
         if (!response.ok) {

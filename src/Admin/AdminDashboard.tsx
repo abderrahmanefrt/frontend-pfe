@@ -27,7 +27,7 @@ const AdminDashboard: React.FC = () => {
       }
 
       try {
-        const response = await fetch('https://pfe-project-2nrq.onrender.com/api/admin/stats', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${user.accessToken}`,

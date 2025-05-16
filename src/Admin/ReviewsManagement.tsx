@@ -21,7 +21,7 @@ const ManageDoctorReviews: React.FC = () => {
   const fetchReviews = async () => {
     try {
       const token = localStorage.getItem("accessToken"); // ou via AuthContext
-      const res = await fetch(`https://pfe-project-2nrq.onrender.com/api/avis/${doctorId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/avis/${doctorId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch reviews");
@@ -37,7 +37,7 @@ const ManageDoctorReviews: React.FC = () => {
   const deleteReview = async (reviewId: number) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/avis/${reviewId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/avis/${reviewId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });

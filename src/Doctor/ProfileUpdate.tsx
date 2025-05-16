@@ -35,7 +35,7 @@ const DoctorProfileEdit: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("https://pfe-project-2nrq.onrender.com/api/medecin/profile", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/profile`, {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },
@@ -72,7 +72,7 @@ const DoctorProfileEdit: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/medecin/profile", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

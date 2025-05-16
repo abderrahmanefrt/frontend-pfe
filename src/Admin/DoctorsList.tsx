@@ -29,7 +29,7 @@ const DoctorsList: React.FC = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch('https://pfe-project-2nrq.onrender.com/api/admin/medecins', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/medecins`, {
           headers: {
             'Authorization': `Bearer ${user?.accessToken}`,
             'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const DoctorsList: React.FC = () => {
 
   const openDoctorProfile = async (id: number) => {
     try {
-      const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/medecins/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/medecins/${id}`, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
         },
@@ -137,7 +137,7 @@ const DoctorsList: React.FC = () => {
                           <td className="align-middle">
                             <div className="d-flex align-items-center">
                               <img 
-                                src={`https://pfe-project-2nrq.onrender.com/${doc.photo.replace(/\\/g, '/')}`} 
+                                src={`${import.meta.env.VITE_API_URL}/${doc.photo.replace(/\\/g, '/')}`} 
                                 alt="Doctor" 
                                 className="rounded-circle me-2"
                                 style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
@@ -215,7 +215,7 @@ const DoctorsList: React.FC = () => {
                   <div className="col-md-4 text-center mb-3">
                     {selectedDoctor.photo && (
                       <img
-                        src={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.photo.replace(/\\/g, '/')}`}
+                        src={`${import.meta.env.VITE_API_URL}/${selectedDoctor.photo.replace(/\\/g, '/')}`}
                         alt="Doctor"
                         className="img-fluid rounded-circle mb-3"
                         style={{ width: "150px", height: "150px", objectFit: "cover" }}
@@ -263,7 +263,7 @@ const DoctorsList: React.FC = () => {
                         </div>
                         <div className="card-body">
                           <a
-                            href={`https://pfe-project-2nrq.onrender.com/${selectedDoctor.document.replace(/\\/g, '/')}`}
+                            href={`${import.meta.env.VITE_API_URL}/${selectedDoctor.document.replace(/\\/g, '/')}`}
                             target="_blank" 
                             rel="noreferrer"
                             className="btn btn-outline-primary"

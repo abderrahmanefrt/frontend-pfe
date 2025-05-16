@@ -1,54 +1,54 @@
+// Footer.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="bg-dark text-light pt-5 pb-4 mt-5">
+    <footer className="pt-5 pb-4 mt-5" style={{ backgroundColor: '#121517', color: '#f5f7f9' }}>
       <div className="container">
         <div className="row">
-
           {/* About Indoctor */}
           <div className="col-lg-4 col-md-6 mb-4">
             <div className="d-flex align-items-center mb-3">
               <h5 className="mb-0 fw-bold fs-4">
-                <span className="text-primary">Indoctor</span>
+                <span style={{ color: '#4682B4' }}>Indoctor</span>
               </h5>
             </div>
-            <p className="text-light opacity-75">
-              Indoctor révolutionne la prise de rendez-vous médicaux en Algérie. 
-              Notre plateforme connecte les patients aux meilleurs professionnels 
-              de santé en quelques clics.
+            <p style={{ opacity: 0.75 }}>
+              Indoctor revolutionizes medical appointments in Algeria. 
+              Our platform connects patients with the best healthcare 
+              professionals in just a few clicks.
             </p>
             <div className="mt-3">
-              <a href="#" className="text-light me-3 fs-5 hover-primary"><i className="bi bi-facebook"></i></a>
-              <a href="#" className="text-light me-3 fs-5 hover-primary"><i className="bi bi-instagram"></i></a>
-              <a href="#" className="text-light me-3 fs-5 hover-primary"><i className="bi bi-twitter-x"></i></a>
-              <a href="#" className="text-light fs-5 hover-primary"><i className="bi bi-linkedin"></i></a>
+              <a href="#" className="me-3 fs-5 hover-primary" style={{ color: '#f5f7f9' }}><i className="bi bi-facebook"></i></a>
+              <a href="#" className="me-3 fs-5 hover-primary" style={{ color: '#f5f7f9' }}><i className="bi bi-instagram"></i></a>
+              <a href="#" className="me-3 fs-5 hover-primary" style={{ color: '#f5f7f9' }}><i className="bi bi-twitter-x"></i></a>
+              <a href="#" className="fs-5 hover-primary" style={{ color: '#f5f7f9' }}><i className="bi bi-linkedin"></i></a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="col-lg-2 col-md-6 mb-4">
-            <h5 className="fw-bold mb-3 fs-5 text-light">Liens rapides</h5>
+            <h5 className="fw-bold mb-3 fs-5">Quick Links</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <Link to="/" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Accueil
+                <Link to="/" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Home
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/doctors" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Médecins
+                <Link to="/doctors" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Doctors
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/services" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Services
+                <Link to="/services" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Services
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/about" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> À propos
+                <Link to="/about" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> About
                 </Link>
               </li>
             </ul>
@@ -56,26 +56,26 @@ function Footer() {
 
           {/* Account Links */}
           <div className="col-lg-2 col-md-6 mb-4">
-            <h5 className="fw-bold mb-3 fs-5 text-light">Mon compte</h5>
+            <h5 className="fw-bold mb-3 fs-5">My Account</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <Link to="/login" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Connexion
+                <Link to="/login" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Login
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/signup" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Inscription
+                <Link to="/signup" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Sign Up
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/dashboard" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Tableau de bord
+                <Link to="/dashboard" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Dashboard
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/contact" className="text-light opacity-75 text-decoration-none hover-primary">
-                  <i className="bi bi-chevron-right me-1 text-primary"></i> Contact
+                <Link to="/contact" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
+                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Contact
                 </Link>
               </li>
             </ul>
@@ -83,55 +83,44 @@ function Footer() {
 
           {/* Contact Info */}
           <div className="col-lg-4 col-md-6 mb-4">
-            <h5 className="fw-bold mb-3 fs-5 text-light">Nous contacter</h5>
+            <h5 className="fw-bold mb-3 fs-5">Contact Us</h5>
             <ul className="list-unstyled">
               <li className="mb-3 d-flex">
-                <i className="bi bi-geo-alt-fill text-primary me-3 mt-1 fs-5"></i>
-                <span className="text-light opacity-75">123 Rue Didouche Mourad, Alger Centre, Algérie</span>
+                <i className="bi bi-geo-alt-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
+                <span style={{ opacity: 0.75 }}>123 Rue Didouche Mourad, Alger Centre, Algeria</span>
               </li>
               <li className="mb-3 d-flex">
-                <i className="bi bi-envelope-fill text-primary me-3 mt-1 fs-5"></i>
-                <span className="text-light opacity-75">contact@indoctor.dz</span>
+                <i className="bi bi-envelope-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
+                <span style={{ opacity: 0.75 }}>contact@indoctor.dz</span>
               </li>
               <li className="mb-3 d-flex">
-                <i className="bi bi-telephone-fill text-primary me-3 mt-1 fs-5"></i>
-                <span className="text-light opacity-75">+213 560 123 456</span>
+                <i className="bi bi-telephone-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
+                <span style={{ opacity: 0.75 }}>+213 560 123 456</span>
               </li>
               <li className="mb-3 d-flex">
-                <i className="bi bi-clock-fill text-primary me-3 mt-1 fs-5"></i>
-                <span className="text-light opacity-75">Lun-Ven: 8h-17h | Sam: 8h-12h</span>
+                <i className="bi bi-clock-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
+                <span style={{ opacity: 0.75 }}>Mon-Fri: 8am-5pm | Sat: 8am-12pm</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="text-center pt-4 mt-4 border-top border-secondary">
+        <div className="text-center pt-4 mt-4" style={{ borderTop: '1px solid #6c757d' }}>
           <p className="mb-0">
-            <span className="text-light opacity-75">&copy; {new Date().getFullYear()} </span>
-            <span className="text-primary fw-bold">Indoctor</span>
-            <span className="text-light opacity-75">. Tous droits réservés. | </span>
-            <Link to="/privacy" className="text-light text-decoration-none hover-primary">
-              Confidentialité
+            <span style={{ opacity: 0.75 }}>&copy; {new Date().getFullYear()} </span>
+            <span className="fw-bold" style={{ color: '#4682B4' }}>Indoctor</span>
+            <span style={{ opacity: 0.75 }}>. All rights reserved. | </span>
+            <Link to="/privacy" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9' }}>
+              Privacy
             </Link>
-            <span className="text-light opacity-75"> | </span>
-            <Link to="/conditions" className="text-light text-decoration-none hover-primary">
-              Conditions
+            <span style={{ opacity: 0.75 }}> | </span>
+            <Link to="/conditions" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9' }}>
+              Terms
             </Link>
           </p>
         </div>
       </div>
-
-      {/* Style pour les effets hover */}
-      <style jsx>{`
-        .hover-primary {
-          transition: color 0.3s ease;
-        }
-        .hover-primary:hover {
-          color: var(--bs-primary) !important;
-          text-decoration: none;
-        }
-      `}</style>
     </footer>
   );
 }

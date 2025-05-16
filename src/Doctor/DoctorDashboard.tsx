@@ -20,7 +20,7 @@ const DoctorDashboard: React.FC = () => {
 
     const fetchDoctorProfile = async () => {
       try {
-        const response = await fetch("https://pfe-project-2nrq.onrender.com/api/medecin/me", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/me`, {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
           },

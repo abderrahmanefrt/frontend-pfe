@@ -20,7 +20,7 @@ const ChangePassword: React.FC = () => {
     }
 
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/medecin/password", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

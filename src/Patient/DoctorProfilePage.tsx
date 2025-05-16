@@ -56,7 +56,7 @@ const DoctorProfilePage: React.FC = () => {
           return;
         }
 
-        const apiUrl = `https://pfe-project-2nrq.onrender.com/api/users/doctor/${id}`;
+        const apiUrl = `${import.meta.env.VITE_API_URL}/api/users/doctor/${id}`;
         const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
@@ -89,7 +89,7 @@ const DoctorProfilePage: React.FC = () => {
     const fetchAvis = async () => {
       try {
         const token = await getAccessToken();
-        const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/avis/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/avis/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -22,7 +22,6 @@ const RescheduleAppointment = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Charger les détails du rendez-vous
   useEffect(() => {
     const fetchAppointment = async () => {
       try {
@@ -39,10 +38,10 @@ const RescheduleAppointment = () => {
 
         const data = await response.json();
         const appointment = data.appointment || data;
-        
+
         setCurrentAppointment(appointment);
         setFormData({
-          time: appointment.time || "",
+          time: format(parseISO(appointment.time), "HH:mm"),
           availabilityId: appointment.availabilityId || ""
         });
       } catch (err: any) {
@@ -55,7 +54,6 @@ const RescheduleAppointment = () => {
     fetchAppointment();
   }, [id]);
 
-  // Charger les disponibilités après avoir obtenu le medecinId
   useEffect(() => {
     if (!currentAppointment?.medecinId) return;
 
@@ -78,9 +76,9 @@ const RescheduleAppointment = () => {
         const data = await response.json();
         const availabilities = data.a_venir || data.availabilities || [];
 
-        // Filtrer les disponibilités valides
         const validAvailabilities = availabilities.filter((avail: any) => {
-          return isAfter(parseISO(avail.date), new Date());
+          const parsedDate = new Date(avail.date);
+          return !isNaN(parsedDate.getTime()) && isAfter(parsedDate, new Date());
         });
 
         setAvailabilities(validAvailabilities);
@@ -98,18 +96,17 @@ const RescheduleAppointment = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-  
-    // Validation
+
     if (!formData.availabilityId || !formData.time) {
       setError("Veuillez sélectionner un créneau et une heure");
       return;
     }
-  
+
     if (currentAppointment?.status === "accepter") {
       setError("Ce rendez-vous a déjà été accepté et ne peut plus être modifié");
       return;
     }
-  
+
     try {
       const token = getAccessToken();
       const response = await fetch(
@@ -126,16 +123,14 @@ const RescheduleAppointment = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Erreur lors de la mise à jour");
       }
-  
+
       setSuccess("Rendez-vous modifié avec succès !");
-      
-      // Rediriger vers la page d'historique des rendez-vous et mettre à jour les rendez-vous
       setTimeout(() => {
         navigate("/dashboard/appointmentHistory");
       }, 1000);
@@ -143,7 +138,6 @@ const RescheduleAppointment = () => {
       setError(err.message || "Une erreur est survenue");
     }
   };
-  
 
   if (loading.appointment || loading.availabilities) {
     return <Spinner animation="border" className="m-5" />;
@@ -152,7 +146,7 @@ const RescheduleAppointment = () => {
   return (
     <div className="container my-4">
       <h2 className="mb-4">Reprogrammer le rendez-vous</h2>
-      
+
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
@@ -172,11 +166,18 @@ const RescheduleAppointment = () => {
               required
             >
               <option value="">Sélectionnez un créneau</option>
-              {availabilities.map((avail) => (
-                <option key={avail.id} value={avail.id}>
-                  {format(parseISO(avail.date), "dd/MM/yyyy")} - {avail.startTime} à {avail.endTime}
-                </option>
-              ))}
+              {availabilities.map((avail) => {
+                const parsedDate = new Date(avail.date);
+                const isValidDate = !isNaN(parsedDate.getTime());
+
+                return (
+                  <option key={avail.id} value={avail.id}>
+                    {isValidDate
+                      ? `${format(parsedDate, "dd/MM/yyyy")} - ${avail.startTime} à ${avail.endTime}`
+                      : "Date invalide"}
+                  </option>
+                );
+              })}
             </Form.Select>
           </Form.Group>
 

@@ -20,7 +20,7 @@ const AppointmentRequests: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch("https://pfe-project-2nrq.onrender.com/api/appointments/medecin", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/medecin`, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
         },
@@ -48,7 +48,7 @@ const AppointmentRequests: React.FC = () => {
 
   const updateStatus = async (id: string, status: "accepter" | "refuser") => {
     try {
-      const response = await fetch(`https://pfe-project-2nrq.onrender.com/api/appointments/${id}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

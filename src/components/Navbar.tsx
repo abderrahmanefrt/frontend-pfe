@@ -1,3 +1,4 @@
+// Navbar.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -7,7 +8,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ brand }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-sm fixed-top">
+    <nav className="navbar navbar-expand-lg navbar-dark shadow-sm fixed-top" style={{ backgroundColor: '#4682B4' }}>
       <div className="container">
         {/* Brand with enhanced styling */}
         <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
@@ -35,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
               <Link className="nav-link px-3 py-2 rounded position-relative" to="/">
                 <i className="bi bi-house-door me-1 d-lg-none"></i>
                 Home
-                <span className="position-absolute bottom-0 start-50 translate-middle-x bg-light rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s' }}></span>
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s', backgroundColor: '#f5f7f9' }}></span>
               </Link>
             </li>
 
@@ -43,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
               <Link className="nav-link px-3 py-2 rounded position-relative" to="/login">
                 <i className="bi bi-box-arrow-in-right me-1 d-lg-none"></i>
                 Login
-                <span className="position-absolute bottom-0 start-50 translate-middle-x bg-light rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s' }}></span>
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s', backgroundColor: '#f5f7f9' }}></span>
               </Link>
             </li>
 
@@ -51,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
               <Link className="nav-link px-3 py-2 rounded position-relative" to="/about">
                 <i className="bi bi-info-circle me-1 d-lg-none"></i>
                 About
-                <span className="position-absolute bottom-0 start-50 translate-middle-x bg-light rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s' }}></span>
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s', backgroundColor: '#f5f7f9' }}></span>
               </Link>
             </li>
 
@@ -59,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
               <Link className="nav-link px-3 py-2 rounded position-relative" to="/contact">
                 <i className="bi bi-envelope me-1 d-lg-none"></i>
                 Contact
-                <span className="position-absolute bottom-0 start-50 translate-middle-x bg-light rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s' }}></span>
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ width: '0', height: '2px', transition: 'width 0.3s', backgroundColor: '#f5f7f9' }}></span>
               </Link>
             </li>
 
@@ -100,7 +101,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
                     aria-label="Search"
                     style={{ minWidth: '150px' }}
                   />
-                  <button className="btn btn-light border-start-0 rounded-end" type="submit">
+                  <button className="btn rounded-end" type="submit" style={{ backgroundColor: '#9dbeda', color: '#121517' }}>
                     <i className="bi bi-search"></i>
                   </button>
                 </div>

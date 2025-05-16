@@ -1,6 +1,45 @@
-/* Add to your main CSS file */
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+/* app.css */
+/* Custom properties */
+:root {
+  --text: #121517;
+  --background: #f5f7f9;
+  --primary: #4682B4;
+  --secondary: #9dbeda;
+  --accent: #64a2d4;
+}
+
+/* Global styles */
+body {
+  padding-top: 56px; /* Height of your navbar */
+  color: var(--text);
+  background-color: var(--background);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+
+}
+:root {
+  --text: #121517;
+  --background: #f5f7f9;
+  --primary: #4682B4;
+  --secondary: #9dbeda;
+  --accent: #64a2d4;
+}
+
+
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 72px; /* Larger navbar on desktop */
+  }
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: var(--primary) !important;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .nav-link:hover span {
@@ -13,17 +52,10 @@
 
 .dropdown-menu {
   border-radius: 0.5rem !important;
-}
-body {
-  padding-top: 56px; /* Height of your navbar */
+  background-color: var(--background);
 }
 
-@media (min-width: 992px) {
-  body {
-    padding-top: 72px; /* Larger navbar on desktop */
-  }
-}
-/* Add to your global CSS */
+/* Card hover effects */
 .hover-shadow:hover {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-2px);
@@ -35,16 +67,83 @@ body {
 
 .hero-section {
   transition: margin-top 0.3s ease;
-}
-/* Correction globale pour toutes les pages */
-body {
-  padding-top: 72px !important; /* Hauteur de votre navbar */
+  top: 0;
+  z-index: 0;
+
 }
 
-.hero-section {
-  margin-top: -72px;
-  height: 100vh;
-}
+/* Star rating */
 .star-rating .star {
-  font-size: 1.5rem; /* Ajuste la taille des étoiles avec du CSS */
+  font-size: 1.5rem;
+}
+
+/* Hover effects */
+.hover-primary {
+  transition: color 0.3s ease;
+}
+
+.hover-primary:hover {
+  color: var(--primary) !important;
+  text-decoration: none;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Text colors */
+.text-primary {
+  color: var(--primary) !important;
+}
+
+/* Background colors */
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--secondary) !important;
+}
+
+.bg-accent {
+  background-color: var(--accent) !important;
+}
+.navbar.fixed-top {
+  position: fixed;
+  top: -1px; /* Tiny pull-up for the navbar itself */
+  left: 0;
+  right: 0;
+}
+/* Hover effects */
+.btn-primary:hover {
+  background-color: #3a6d99 !important;
+}
+
+a:hover {
+  color: #3a6d99 !important;
+  text-decoration: underline;
+}
+
+/* Input focus states */
+.form-control:focus {
+  border-color: #64a2d4 !important;
+  box-shadow: 0 0 0 0.25rem rgba(100, 162, 212, 0.25) !important;
+}
+
+/* Checkbox styling */
+.form-check-input:checked {
+  background-color: #4682B4 !important;
+  border-color: #4682B4 !important;
 }

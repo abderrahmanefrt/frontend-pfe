@@ -20,7 +20,7 @@ const PatientsList: React.FC = () => {
 
   const fetchPatients = async () => {
     try {
-      const res = await fetch('https://pfe-project-2nrq.onrender.com/api/admin/users', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
         },
@@ -34,7 +34,7 @@ const PatientsList: React.FC = () => {
 
   const fetchPatientById = async (id: number) => {
     try {
-      const res = await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}`, {
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
         },
@@ -48,7 +48,7 @@ const PatientsList: React.FC = () => {
 
   const handleBlock = async (id: number) => {
     try {
-      await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}/block`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}/block`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,
@@ -64,7 +64,7 @@ const PatientsList: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this patient?')) return;
     try {
-      await fetch(`https://pfe-project-2nrq.onrender.com/api/admin/users/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${user?.accessToken}`,

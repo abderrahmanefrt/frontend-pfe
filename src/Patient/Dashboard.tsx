@@ -5,20 +5,20 @@ import SideNavbar, { NavItem } from "../components/SideNavbar";
 
 // Tip and habit data
 const tips = [
-  "Prenez une pause de 5 minutes pour respirer profondément.",
-  "Faites une courte promenade pour stimuler votre énergie.",
-  "Étirez vos épaules et votre cou pour soulager la tension.",
-  "Buvez un verre d'eau avant chaque repas pour rester hydraté."
+  "Take a 5-minute break to breathe deeply.",
+  "Go for a short walk to boost your energy.",
+  "Stretch your shoulders and neck to relieve tension.",
+  "Drink a glass of water before each meal to stay hydrated.",
 ];
 const motivationalQuotes = [
-  "La santé n'est pas tout, mais sans la santé, tout n'est rien.",
-  "Chaque pas compte : faites aujourd'hui un petit effort pour un grand bien-être.",
-  "Votre corps mérite le meilleur—traitez-le avec soin.",
+  "Health isn't everything, but without health, everything is nothing.",
+  "Every step counts: make a small effort today for a better well-being.",
+  "Your body deserves the best—treat it with care.",
 ];
 const initialHabits = [
-  { label: "8 verres d'eau", done: false },
-  { label: "30 min de marche", done: false },
-  { label: "Méditation 5 min", done: false },
+  { label: "8 glasses of water", done: false },
+  { label: "30 min walk", done: false },
+  { label: "5 min meditation", done: false },
 ];
 
 const Dashboard: React.FC = () => {
@@ -31,10 +31,10 @@ const Dashboard: React.FC = () => {
   };
 
   const navItems: NavItem[] = [
-    { label: "Patient Profile", path: "/patient/profile" },
-    { label: "Doctor Search", path: "/doctorSearch" },
-    { label: "Appointment History", path: "/dashboard/appointmentHistory" },
-    { label: "Settings", path: "/settings" }
+    { label: "My Profile", path: "/patient/profile" },
+    { label: "Find a Doctor", path: "/doctorSearch" },
+    { label: "My Appointments", path: "/dashboard/appointmentHistory" },
+    { label: "Account Settings", path: "/settings" },
   ];
 
   const [tipIndex, setTipIndex] = useState(0);
@@ -52,39 +52,56 @@ const Dashboard: React.FC = () => {
   };
 
   const upcomingCount = 2;
-  
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid" style={{ background: "#f5f7f9", minHeight: "100vh" }}>
       <div className="row">
         <div className="col-md-3 col-lg-2 p-0">
           <SideNavbar items={navItems} onLogout={handleLogout} />
         </div>
-        <div className="col-md-9 col-lg-10 p-4" style={{ background: "#f8f9fa" }}>
+        <div className="col-md-9 col-lg-10 p-4 text-dark">
 
           {/* Hero Banner */}
-          <div className="card mb-4 p-4" style={{ borderRadius: "1rem", background: "#e9f7ef" }}>
+          <div
+            className="card mb-4 p-4"
+            style={{
+              borderRadius: "1rem",
+              background: "#9dbeda",
+              color: "#121517",
+            }}
+          >
             <div className="d-flex align-items-center">
               <div className="me-3">
-                <div 
-                  className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" 
-                  style={{ width: 64, height: 64, fontSize: "1.5rem" }}
+                <div
+                  className="rounded-circle d-flex justify-content-center align-items-center"
+                  style={{
+                    width: 64,
+                    height: 64,
+                    fontSize: "1.5rem",
+                    background: "#4682B4",
+                    color: "white",
+                  }}
                 >
                   {user?.lastname?.[0] || "G"}
                 </div>
               </div>
               <div>
-                <h2 className="mb-1">Bonjour, {user?.lastname || "Guest"} !</h2>
-                <small className="text-muted">Vous avez {upcomingCount} rendez-vous à venir.</small>
+                <h2 className="mb-1">Hello, {user?.lastname || "Guest"}!</h2>
+                <small className="text-muted">You have {upcomingCount} upcoming appointments.</small>
               </div>
             </div>
           </div>
 
-          
-
-          {/* Personalized Tips Carousel */}
-          <div className="card mb-4 p-3" style={{ borderRadius: "0.75rem" }}>
-            <h5>Conseil Santé</h5>
+          {/* Health Tip */}
+          <div
+            className="card mb-4 p-3"
+            style={{
+              borderRadius: "0.75rem",
+              background: "#ffffff",
+              borderLeft: "4px solid #64a2d4",
+            }}
+          >
+            <h5>Health Tip</h5>
             <div className="d-flex justify-content-between align-items-center">
               <button className="btn btn-sm btn-outline-secondary" onClick={prevTip}>‹</button>
               <p className="mx-3 flex-grow-1 text-center">{tips[tipIndex]}</p>
@@ -92,12 +109,22 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Daily Habit Tracker */}
-          <div className="card mb-4 p-3" style={{ borderRadius: "0.75rem" }}>
-            <h5>Habitudes du Jour</h5>
+          {/* Daily Habits */}
+          <div
+            className="card mb-4 p-3"
+            style={{
+              borderRadius: "0.75rem",
+              background: "#ffffff",
+              borderLeft: "4px solid #4682B4",
+            }}
+          >
+            <h5>Today's Habits</h5>
             <ul className="list-group list-group-flush">
               {habits.map((h, i) => (
-                <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  key={i}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
                   {h.label}
                   <input type="checkbox" checked={h.done} onChange={() => toggleHabit(i)} />
                 </li>
@@ -105,15 +132,30 @@ const Dashboard: React.FC = () => {
             </ul>
           </div>
 
-          {/* Motivational Quote */}
-          <div className="card mb-4 p-3" style={{ borderRadius: "0.75rem", background: "#fff3cd" }}>
-            <h5>Motivation du Jour</h5>
+          {/* Motivation */}
+          <div
+            className="card mb-4 p-3"
+            style={{
+              borderRadius: "0.75rem",
+              background: "#fff3cd",
+              borderLeft: "4px solid #4682B4",
+            }}
+          >
+            <h5>Daily Motivation</h5>
             <p className="fst-italic">"{motivationalQuotes[quoteIndex]}"</p>
-            <button className="btn btn-sm btn-outline-primary" onClick={nextQuote}>Nouveau</button>
+            <button className="btn btn-sm btn-outline-primary" onClick={nextQuote}>
+              New Quote
+            </button>
           </div>
 
-          {/* Nested Routes */}
-          <div className="card p-3 mt-4" style={{ borderRadius: "0.5rem" }}>
+          {/* Nested Pages */}
+          <div
+            className="card p-3 mt-4"
+            style={{
+              borderRadius: "0.5rem",
+              background: "#ffffff",
+            }}
+          >
             <Outlet />
           </div>
         </div>

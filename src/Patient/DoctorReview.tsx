@@ -13,7 +13,7 @@ const handleFeedbackSubmit= async (rating: number, comment: string) => {
       return;
     }
 
-    const response = await fetch("https://pfe-project-2nrq.onrender.com/api/avis", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/avis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
