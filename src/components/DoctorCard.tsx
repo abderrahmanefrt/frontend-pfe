@@ -142,15 +142,19 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
 
       <div className="card-body d-flex flex-column p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="card-title text-primary mb-0 fw-bold">{doctorName}</h5>
-          <span className="badge bg-light text-primary border border-primary rounded-pill px-2">
+          <h5 className="card-title mb-0 fw-bold" style={{ color: 'var(--text)' }}>{doctorName}</h5>
+          <span className="badge rounded-pill px-2" style={{ 
+            backgroundColor: 'var(--secondary)', 
+            color: 'var(--text)',
+            border: `1px solid var(--primary)`
+          }}>
             <i className="fas fa-user-md me-1"></i>Available
           </span>
         </div>
         
-        <div className="mb-3 pb-2 border-bottom">
-          <div className="d-flex align-items-center text-muted small">
-            <i className="fas fa-star-half-alt me-1"></i>
+        <div className="mb-3 pb-2 border-bottom" style={{ borderColor: 'var(--secondary)' }}>
+          <div className="d-flex align-items-center small" style={{ color: 'var(--text)' }}>
+            <i className="fas fa-star-half-alt me-1" style={{ color: 'var(--accent)' }}></i>
             <span>{averageRating.toFixed(1)} out of 5</span>
             <span className="mx-2">•</span>
             <span>Professional Care</span>
@@ -171,15 +175,26 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           <div className="d-grid gap-2">
             <div className="row g-2">
               <div className="col-6">
-                <Link to={`/users/doctor/${doctorId}`} className="btn btn-primary w-100">
+                <Link 
+                  to={`/users/doctor/${doctorId}`} 
+                  className="btn w-100" 
+                  style={{
+                    backgroundColor: 'var(--primary)',
+                    color: 'white'
+                  }}
+                >
                   <i className="fas fa-user-md me-2"></i>View Profile
                 </Link>
               </div>
               <div className="col-6">
                 <Link
-                to={`/appointments/${doctorId}`} 
+                  to={`/appointments/${doctorId}`} 
                   onClick={handleScheduleClick}
-                  className="btn btn-success w-100"
+                  className="btn w-100" 
+                  style={{
+                    backgroundColor: 'var(--accent)',
+                    color: 'white'
+                  }}
                 >
                   <i className="fas fa-calendar-check me-2"></i>Schedule
                 </Link>
@@ -193,11 +208,15 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
         {`
         .doctor-card {
           transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+          background-color: var(--background);
+          color: var(--text);
+          border: 1px solid var(--secondary) !important;
         }
         
         .doctor-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+          border-color: var(--primary) !important;
         }
         
         .doctor-image-container {
@@ -209,6 +228,20 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           bottom: -15px;
           right: 20px;
           z-index: 2;
+        }
+
+        .card-img-top {
+          border-bottom: 1px solid var(--secondary) !important;
+        }
+
+        .btn-primary:hover {
+          background-color: var(--primary);
+          opacity: 0.9;
+        }
+
+        .btn-success:hover {
+          background-color: var(--accent);
+          opacity: 0.9;
         }
         `}
       </style>

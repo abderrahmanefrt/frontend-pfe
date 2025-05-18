@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const getAccessToken = () => localStorage.getItem("accessToken");
+const getAccessToken = () => {
+  const userData = localStorage.getItem("user");
+  if (!userData) return null;
+  try {
+    const user = JSON.parse(userData);
+    return user.accessToken;
+  } catch (err) {
+    console.error("Error parsing user data:", err);
+    return null;
+  }
+};
 
 const DoctorAvailabilityPage = () => {
   const { medecinId } = useParams<{ medecinId: string }>();
@@ -12,11 +22,17 @@ const DoctorAvailabilityPage = () => {
   useEffect(() => {
     const fetchAvailabilities = async () => {
       try {
+        const token = getAccessToken();
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/disponibilites/${medecinId}`,
           {
             headers: {
-              Authorization: `Bearer ${getAccessToken()}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
@@ -32,27 +48,47 @@ const DoctorAvailabilityPage = () => {
     };
 
     fetchAvailabilities();
-  }, [medecinId]);
+  }, [medecinId, navigate]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-blue-600 mb-6 text-center">
-        Doctor Availability
-      </h1>
+    <div className="container py-4" style={{ maxWidth: '1200px' }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 style={{ color: 'var(--text)' }}>Doctor Availability</h1>
+        <button
+          onClick={() => navigate(-1)}
+          className="btn"
+          style={{
+            backgroundColor: 'var(--secondary)',
+            color: 'var(--text)',
+            border: '1px solid var(--primary)',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '0.375rem',
+            fontWeight: '500'
+          }}
+        >
+          <i className="fas fa-arrow-left me-2"></i> Back
+        </button>
+      </div>
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-4 mb-4 rounded">
+        <div className="alert alert-danger border-0 shadow-sm mb-4" style={{ 
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          borderLeft: '4px solid var(--accent)',
+          color: 'var(--text)',
+          borderRadius: '8px'
+        }}>
           {error}
         </div>
       )}
 
       {availabilities.length === 0 ? (
-        <p className="text-center text-gray-600">No availabilities found.</p>
+        <p className="text-center" style={{ color: 'var(--text)' }}>No availabilities found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="row row-cols-1 row-cols-md-2 g-4">
           {availabilities.map((avail) => (
             <div
               key={avail.id}
+              className="col"
               onClick={() =>
                 navigate(`/book-appointment/${medecinId}/${avail.id}`, {
                   state: {
@@ -62,23 +98,39 @@ const DoctorAvailabilityPage = () => {
                   },
                 })
               }
-              className="bg-white border rounded-lg p-4 shadow hover:shadow-md transition-shadow cursor-pointer"
+              style={{ 
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s'
+              }}
             >
-              <p className="text-lg font-semibold text-gray-800">
-                📅 {new Date(avail.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="text-gray-700">
-                🕒 {avail.startTime} - {avail.endTime}
-              </p>
-              <p className="text-gray-600">
-                👥 Max Patients: {avail.maxPatient || "Not specified"}
-              </p>
-              <p className="text-sm text-blue-500 mt-2">Click to book</p>
+              <div className="card h-100 border-0 shadow-sm" style={{ 
+                backgroundColor: 'var(--background)',
+                borderRadius: '12px'
+              }}>
+                <div className="card-body">
+                  <h5 className="card-title" style={{ color: 'var(--text)' }}>
+                    <i className="far fa-calendar-alt me-2"></i>
+                    {new Date(avail.date).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </h5>
+                  <p className="card-text" style={{ color: 'var(--text)' }}>
+                    <i className="far fa-clock me-2"></i>
+                    {avail.startTime} - {avail.endTime}
+                  </p>
+                  <p className="card-text" style={{ color: 'var(--text)' }}>
+                    <i className="fas fa-users me-2"></i>
+                    Max Patients: {avail.maxPatient || "Not specified"}
+                  </p>
+                  <p className="text-muted mt-2">
+                    <i className="fas fa-mouse-pointer me-2"></i>
+                    Click to book
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

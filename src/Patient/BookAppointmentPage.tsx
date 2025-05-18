@@ -19,6 +19,7 @@ const BookAppointmentPage = () => {
   useEffect(() => {
     const fetchBookedTimes = async () => {
       try {
+        console.log("Fetching booked times for medecinId:", medecinId, "date:", date);
         const accessToken = getAccessToken();
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/appointments/booked?medecinId=${medecinId}&date=${date}`,
@@ -30,20 +31,24 @@ const BookAppointmentPage = () => {
         );
         const data = await response.json();
         if (response.ok) {
-          // Convertit "11:00:00" => "11:00"
-          const formattedTimes = (data.bookedTimes || []).map((t: string) =>
-            t.slice(0, 5)
-          );
+          const formattedTimes = (data.bookedTimes || []).map((t: string) => t.slice(0, 5));
           setBookedTimes(formattedTimes);
         } else {
-          console.error(data.message);
+          console.error("Backend error:", data.message);
         }
       } catch (err) {
-        console.error("Error fetching booked times");
+        console.error("Error fetching booked times:", err);
       }
     };
-    fetchBookedTimes();
+    if (medecinId && date) {
+      fetchBookedTimes();
+    }
+    console.log("Date:", date);
+console.log("Booked times:", bookedTimes);
+console.log("Time slots:", timeSlots);
+
   }, [medecinId, date, getAccessToken]);
+  
   
 
   const generateTimeSlots = (start: string, end: string) => {

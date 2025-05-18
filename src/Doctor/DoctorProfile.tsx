@@ -28,7 +28,6 @@ const DoctorProfile: React.FC<{ doctor: DoctorDetails }> = ({ doctor }) => {
     return "/default-avatar.png";
   };
   
-
   const formatFee = (fee?: number): string => {
     if (fee === undefined || fee === null) return "Not specified";
     return new Intl.NumberFormat('en-US', {
@@ -38,15 +37,15 @@ const DoctorProfile: React.FC<{ doctor: DoctorDetails }> = ({ doctor }) => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">My Profile</h2>
-      <div className="card p-4 shadow-sm">
+    <div className="container mt-4" style={{ backgroundColor: '#f5f7f9', padding: '2rem' }}>
+      <h2 className="mb-4" style={{ color: '#121517' }}>My Profile</h2>
+      <div className="card p-4 border-0 shadow-sm" style={{ borderRadius: '12px', backgroundColor: 'white' }}>
         <div className="text-center">
           <div className="position-relative d-inline-block">
             <img
               src={getImageSource()}
               alt={`Dr. ${doctor.firstname} ${doctor.lastname}`}
-              className="rounded-circle mb-3 img-thumbnail"
+              className="rounded-circle mb-3 border"
               width="150"
               height="150"
               onError={(e) => {
@@ -54,55 +53,81 @@ const DoctorProfile: React.FC<{ doctor: DoctorDetails }> = ({ doctor }) => {
                 target.src = "/default-avatar.png";
                 target.onerror = null;
               }}
-              style={{ objectFit: 'cover' }}
+              style={{ 
+                objectFit: 'cover',
+                borderColor: '#9dbeda !important'
+              }}
             />
           </div>
 
-          <h3 className="mb-3">Dr. {doctor.firstname} {doctor.lastname}</h3>
+          <h3 className="mb-3" style={{ color: '#121517' }}>
+            Dr. {doctor.firstname} {doctor.lastname}
+          </h3>
 
           <div className="profile-details mt-4 text-start mx-auto" style={{ maxWidth: '600px' }}>
-            <div className="mb-3">
-              <h5 className="text-primary">Professional Information</h5>
-              <p><strong>Specialty:</strong> {doctor.specialite}</p>
+            <div className="mb-4">
+              <h5 style={{ color: '#4682B4', borderBottom: '2px solid #9dbeda', paddingBottom: '0.5rem' }}>
+                Professional Information
+              </h5>
+              <p style={{ color: '#121517' }}><strong>Specialty:</strong> {doctor.specialite}</p>
               {doctor.yearsOfExperience !== undefined && (
-                <p><strong>Experience:</strong> {doctor.yearsOfExperience} year(s)</p>
+                <p style={{ color: '#121517' }}><strong>Experience:</strong> {doctor.yearsOfExperience} year(s)</p>
               )}
-              <p><strong>Consultation Fee:</strong> {formatFee(doctor.consultationFee)}</p>
+              <p style={{ color: '#121517' }}><strong>Consultation Fee:</strong> {formatFee(doctor.consultationFee)}</p>
               {doctor.licenseNumber && (
-                <p><strong>License #:</strong> {doctor.licenseNumber}</p>
+                <p style={{ color: '#121517' }}><strong>License #:</strong> {doctor.licenseNumber}</p>
               )}
             </div>
 
-            <div className="mb-3">
-              <h5 className="text-primary">Contact Information</h5>
-              <p><strong>Email:</strong> {doctor.email}</p>
-              <p><strong>Phone:</strong> {doctor.phone}</p>
+            <div className="mb-4">
+              <h5 style={{ color: '#4682B4', borderBottom: '2px solid #9dbeda', paddingBottom: '0.5rem' }}>
+                Contact Information
+              </h5>
+              <p style={{ color: '#121517' }}><strong>Email:</strong> {doctor.email}</p>
+              <p style={{ color: '#121517' }}><strong>Phone:</strong> {doctor.phone}</p>
               {doctor.address && (
-                <p><strong>Address:</strong> {doctor.address}</p>
+                <p style={{ color: '#121517' }}><strong>Address:</strong> {doctor.address}</p>
               )}
             </div>
 
             {doctor.dateOfBirth && (
-              <div className="mb-3">
-                <h5 className="text-primary">Personal Information</h5>
-                <p><strong>Date of Birth:</strong> {new Date(doctor.dateOfBirth).toLocaleDateString()}</p>
+              <div className="mb-4">
+                <h5 style={{ color: '#4682B4', borderBottom: '2px solid #9dbeda', paddingBottom: '0.5rem' }}>
+                  Personal Information
+                </h5>
+                <p style={{ color: '#121517' }}><strong>Date of Birth:</strong> {new Date(doctor.dateOfBirth).toLocaleDateString()}</p>
               </div>
             )}
 
-            <div className="mb-3">
-              <h5 className="text-primary">About</h5>
-              <p className="text-muted">
+            <div className="mb-4">
+              <h5 style={{ color: '#4682B4', borderBottom: '2px solid #9dbeda', paddingBottom: '0.5rem' }}>
+                About
+              </h5>
+              <p style={{ color: '#6c757d' }}>
                 {doctor.biography || "No biography available."}
               </p>
             </div>
 
-            <div className="d-flex justify-content-center gap-3 mt-3">
-              <Link to="/doctor/profile/edit" className="btn btn-primary">
+            <div className="d-flex justify-content-center gap-3 mt-4">
+              <Link 
+                to="/doctor/profile/edit" 
+                className="btn border-0"
+                style={{ 
+                  backgroundColor: '#4682B4',
+                  color: 'white',
+                  padding: '0.5rem 1.5rem'
+                }}
+              >
                 Edit Profile
               </Link>
               <button
-                className="btn btn-outline-warning"
+                className="btn border-0"
                 onClick={() => navigate("/doctor/ChangePassword")}
+                style={{ 
+                  backgroundColor: 'rgba(70, 130, 180, 0.1)',
+                  color: '#4682B4',
+                  padding: '0.5rem 1.5rem'
+                }}
               >
                 Change Password
               </button>

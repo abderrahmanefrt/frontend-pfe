@@ -64,75 +64,109 @@ const AppointmentRequests: React.FC = () => {
         throw new Error("Failed to update appointment status.");
       }
   
-      await fetchAppointments(); // Refresh list
+      await fetchAppointments();
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Status update failed");
     }
   };
-  
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Appointment Requests</h2>
+    <div className="container mt-4" style={{ backgroundColor: '#f5f7f9', padding: '2rem' }}>
+      <h2 className="mb-4" style={{ color: '#121517' }}>Appointment Requests</h2>
 
       {error && (
-        <div className="alert alert-danger">
-          {error}
-          <button className="btn-close float-end" onClick={() => setError(null)} />
+        <div className="alert border-0 shadow-sm mb-4" style={{ 
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          borderLeft: '4px solid #dc3545',
+          color: '#dc3545'
+        }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <span>{error}</span>
+            <button 
+              className="btn-close" 
+              onClick={() => setError(null)}
+              style={{ color: '#dc3545' }}
+            />
+          </div>
         </div>
       )}
 
       {loading ? (
-        <p>Loading appointment requests...</p>
+        <div className="d-flex justify-content-center my-5">
+          <div className="spinner-border" style={{ color: '#4682B4' }} role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
       ) : (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Patient</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center text-muted">No appointment requests</td>
-              </tr>
-            ) : (
-              requests.map((req) => (
-                <tr key={req.id}>
-                  <td>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
-                  <td>{req.date}</td>
-                  <td>{req.time || "Not specified"}</td>
-                  <td>{req.status}</td>
-                  <td>
-                    {req.status === "pending" ? (
-                      <>
-                        <button
-                          className="btn btn-success btn-sm me-2"
-                          onClick={() => updateStatus(req.id, "accepter")}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => updateStatus(req.id, "refuser")}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    ) : (
-                      <span>No actions</span>
-                    )}
-                  </td>
+        <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+          <div className="table-responsive">
+            <table className="table mb-0">
+              <thead style={{ backgroundColor: '#f5f7f9' }}>
+                <tr>
+                  <th style={{ color: '#4682B4' }}>Patient</th>
+                  <th style={{ color: '#4682B4' }}>Date</th>
+                  <th style={{ color: '#4682B4' }}>Time</th>
+                  <th style={{ color: '#4682B4' }}>Status</th>
+                  <th style={{ color: '#4682B4' }}>Actions</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {requests.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4" style={{ color: '#6c757d' }}>
+                      No appointment requests
+                    </td>
+                  </tr>
+                ) : (
+                  requests.map((req) => (
+                    <tr key={req.id}>
+                      <td style={{ color: '#121517' }}>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
+                      <td style={{ color: '#121517' }}>{req.date}</td>
+                      <td style={{ color: '#121517' }}>{req.time || "Not specified"}</td>
+                      <td>
+                        <span className={`badge ${
+                          req.status === 'accepter' ? 'bg-success' : 
+                          req.status === 'refuser' ? 'bg-danger' : 'bg-warning'
+                        }`}>
+                          {req.status}
+                        </span>
+                      </td>
+                      <td>
+                        {req.status === "pending" ? (
+                          <div className="d-flex gap-2">
+                            <button
+                              className="btn btn-sm border-0"
+                              onClick={() => updateStatus(req.id, "accepter")}
+                              style={{ 
+                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                color: '#28a745'
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              className="btn btn-sm border-0"
+                              onClick={() => updateStatus(req.id, "refuser")}
+                              style={{ 
+                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                color: '#dc3545'
+                              }}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span style={{ color: '#6c757d' }}>No actions</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -45,7 +45,7 @@ const DoctorSchedule: React.FC = () => {
         date: slot.date,
         startTime: slot.startTime,
         endTime: slot.endTime,
-        maxPatient: slot.maxPatient, // Assure-toi que ce champ correspond à celui de ta DB
+        maxPatient: slot.maxPatient,
       }));
   
       setSlots(formattedSlots);
@@ -73,7 +73,6 @@ const DoctorSchedule: React.FC = () => {
   };
 
   const handleAddSlot = async () => {
-    // Validate inputs
     if (!newSlot.date || !newSlot.startTime || !newSlot.endTime) {
       setError("All fields are required");
       return;
@@ -107,7 +106,6 @@ const DoctorSchedule: React.FC = () => {
         throw new Error(errorData.message || "Failed to add slot");
       }
 
-      // Refresh the slots after successful addition
       await fetchSlots();
       setNewSlot({
         date: "",
@@ -141,7 +139,6 @@ const DoctorSchedule: React.FC = () => {
         throw new Error("Failed to delete slot");
       }
 
-      // Refresh the slots after successful deletion
       await fetchSlots();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete slot");
@@ -151,7 +148,7 @@ const DoctorSchedule: React.FC = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center my-5">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: '#4682B4' }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -160,75 +157,93 @@ const DoctorSchedule: React.FC = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Your Schedule</h2>
+      <h2 className="mb-4" style={{ color: '#4682B4' }}>Your Schedule</h2>
 
       {/* Error Display */}
       {error && (
-        <div className="alert alert-danger alert-dismissible fade show">
-          {error}
-          <button
-            type="button"
-            className="btn-close"
-            onClick={() => setError(null)}
-          />
+        <div className="alert border-0 shadow-sm mb-4" style={{ 
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          borderLeft: '4px solid #dc3545'
+        }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <span style={{ color: '#dc3545' }}>{error}</span>
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setError(null)}
+            />
+          </div>
         </div>
       )}
 
       {/* Add New Slot Form */}
-      <div className="card mb-4">
-        <div className="card-header bg-primary text-white">
+      <div className="card mb-4 border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+        <div className="card-header border-0" style={{ 
+          backgroundColor: '#4682B4',
+          color: 'white',
+          borderRadius: '12px 12px 0 0'
+        }}>
           <h5 className="mb-0">Add New Time Slot</h5>
         </div>
-        <div className="card-body">
+        <div className="card-body" style={{ backgroundColor: 'white' }}>
           <div className="row g-3">
             <div className="col-md-3">
-              <label className="form-label">Date (YYYY-MM-DD)</label>
+              <label className="form-label" style={{ color: '#121517' }}>Date</label>
               <input
                 type="date"
-                className="form-control"
+                className="form-control border-2"
                 name="date"
                 value={newSlot.date}
                 onChange={handleInputChange}
                 required
+                style={{ borderColor: '#9dbeda' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label">Start Time</label>
+              <label className="form-label" style={{ color: '#121517' }}>Start Time</label>
               <input
                 type="time"
-                className="form-control"
+                className="form-control border-2"
                 name="startTime"
                 value={newSlot.startTime}
                 onChange={handleInputChange}
                 required
+                style={{ borderColor: '#9dbeda' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label">End Time</label>
+              <label className="form-label" style={{ color: '#121517' }}>End Time</label>
               <input
                 type="time"
-                className="form-control"
+                className="form-control border-2"
                 name="endTime"
                 value={newSlot.endTime}
                 onChange={handleInputChange}
                 required
+                style={{ borderColor: '#9dbeda' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label">Max Patients</label>
+              <label className="form-label" style={{ color: '#121517' }}>Max Patients</label>
               <input
                 type="number"
                 min="1"
-                className="form-control"
+                className="form-control border-2"
                 name="maxPatients"
                 value={newSlot.maxPatients}
                 onChange={handleInputChange}
+                style={{ borderColor: '#9dbeda' }}
               />
             </div>
             <div className="col-md-3 d-flex align-items-end">
               <button
-                className="btn btn-primary w-100"
+                className="btn w-100 border-0"
                 onClick={handleAddSlot}
+                style={{ 
+                  backgroundColor: '#4682B4',
+                  color: 'white',
+                  height: '38px'
+                }}
               >
                 Add Slot
               </button>
@@ -238,34 +253,41 @@ const DoctorSchedule: React.FC = () => {
       </div>
 
       {/* Time Slots Table */}
-      <div className="card">
-        <div className="card-header bg-light">
-          <h5 className="mb-0">Your Availability</h5>
+      <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+        <div className="card-header border-0" style={{ 
+          backgroundColor: 'white',
+          borderRadius: '12px 12px 0 0'
+        }}>
+          <h5 className="mb-0" style={{ color: '#121517' }}>Your Availability</h5>
         </div>
-        <div className="card-body p-0">
+        <div className="card-body p-0" style={{ backgroundColor: 'white', borderRadius: '0 0 12px 12px' }}>
           <div className="table-responsive">
             <table className="table table-hover mb-0">
-              <thead className="table-light">
+              <thead style={{ backgroundColor: '#f5f7f9' }}>
                 <tr>
-                  <th>Date</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
-                  <th>Max Patients</th>
-                  <th>Actions</th>
+                  <th style={{ color: '#4682B4' }}>Date</th>
+                  <th style={{ color: '#4682B4' }}>Start Time</th>
+                  <th style={{ color: '#4682B4' }}>End Time</th>
+                  <th style={{ color: '#4682B4' }}>Max Patients</th>
+                  <th style={{ color: '#4682B4' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {slots.length > 0 ? (
                   slots.map((slot) => (
                     <tr key={slot.id}>
-                      <td>{slot.date}</td>
-                      <td>{slot.startTime}</td>
-                      <td>{slot.endTime}</td>
-                      <td>{slot.maxPatient}</td>
+                      <td style={{ color: '#121517' }}>{slot.date}</td>
+                      <td style={{ color: '#121517' }}>{slot.startTime}</td>
+                      <td style={{ color: '#121517' }}>{slot.endTime}</td>
+                      <td style={{ color: '#121517' }}>{slot.maxPatient}</td>
                       <td>
                         <button
-                          className="btn btn-sm btn-outline-danger"
+                          className="btn btn-sm border-0"
                           onClick={() => handleDeleteSlot(slot.id)}
+                          style={{ 
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            color: '#dc3545'
+                          }}
                         >
                           Delete
                         </button>
@@ -274,7 +296,7 @@ const DoctorSchedule: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center py-4 text-muted">
+                    <td colSpan={5} className="text-center py-4" style={{ color: '#6c757d' }}>
                       No time slots available
                     </td>
                   </tr>

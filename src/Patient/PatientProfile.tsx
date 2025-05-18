@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
-import AppointmentHistory from "./AppointmentHistory"; // Assuming this component exists
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import AppointmentHistory from "./AppointmentHistory";
 import Spinner from "react-bootstrap/Spinner";
 
-// Fonction pour rafraîchir le token d'accès
 const refreshAccessToken = async () => {
   const storedUser = localStorage.getItem("user");
   if (!storedUser) return null;
@@ -34,7 +33,6 @@ const refreshAccessToken = async () => {
   }
 };
 
-// Fonction pour faire une requête authentifiée
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const storedUser = localStorage.getItem("user");
   if (!storedUser) throw new Error("Token not found");
@@ -47,10 +45,8 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const response = await fetch(url, { ...options, headers });
 
   if (response.status === 401) {
-    // Si le token est expiré, rafraîchir
     const newAccessToken = await refreshAccessToken();
     if (newAccessToken) {
-      // Refaire la requête avec le nouveau token
       headers.set("Authorization", `Bearer ${newAccessToken}`);
       return fetch(url, { ...options, headers });
     }
@@ -63,9 +59,9 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   return response;
 };
 
-// Composant principal PatientProfile
 const PatientProfile: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate(); // Added navigation hook
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -85,88 +81,136 @@ const PatientProfile: React.FC = () => {
     fetchProfile();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <Spinner animation="border" style={{ color: '#4682B4' }} />
+      </div>
+    );
+  }
+
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4">Patient Profile</h1>
+    <div className="container py-4" style={{ backgroundColor: '#f5f7f9' }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 style={{ color: '#121517' }}>Patient Profile</h1>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="btn"
+          style={{
+            backgroundColor: 'var(--secondary)',
+            color: 'var(--text)',
+            border: '1px solid var(--primary)',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '0.375rem',
+            fontWeight: '500'
+          }}
+        >
+          <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </button>
+      </div>
+
       <div className="row">
         {/* Left Column: Profile Information */}
         <div className="col-md-4 overflow-auto" style={{ maxHeight: "80vh" }}>
-          <div className="card shadow-sm mb-4">
-            <div className="card-header bg-primary text-white">
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+            <div className="card-header border-0" style={{ 
+              backgroundColor: '#4682B4',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
               Personal Information
             </div>
-            <div className="card-body">
-              <p>
+            <div className="card-body" style={{ backgroundColor: 'white' }}>
+              <p style={{ color: '#121517' }}>
                 <strong>Name:</strong> {profile?.firstname} {profile?.lastname || "Guest"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Date of Birth:</strong> {profile?.dateOfBirth || "N/A"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Gender:</strong> {profile?.gender || "N/A"}
               </p>
             </div>
           </div>
 
-          <div className="card shadow-sm mb-4">
-            <div className="card-header bg-info text-white">
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+            <div className="card-header border-0" style={{ 
+              backgroundColor: '#64a2d4',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
               Contact Details
             </div>
-            <div className="card-body">
-              <p>
+            <div className="card-body" style={{ backgroundColor: 'white' }}>
+              <p style={{ color: '#121517' }}>
                 <strong>Phone:</strong> {profile?.phone || "Not available"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Email:</strong> {profile?.email}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Address:</strong> {profile?.address || "Not provided"}
               </p>
             </div>
           </div>
 
-          <div className="card shadow-sm mb-4">
-            <div className="card-header bg-secondary text-white">
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+            <div className="card-header border-0" style={{ 
+              backgroundColor: '#9dbeda',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
               Medical & Insurance
             </div>
-            <div className="card-body">
-              <p>
+            <div className="card-body" style={{ backgroundColor: 'white' }}>
+              <p style={{ color: '#121517' }}>
                 <strong>Medical History:</strong> {profile?.medicalHistory || "No details"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Allergies:</strong> {profile?.allergies || "None"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Medications:</strong> {profile?.medications || "None"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Primary Care Physician:</strong> {profile?.primaryCarePhysician || "Not assigned"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Chifa Card Number:</strong> {profile?.chifaCardNumber || "Not provided"}
               </p>
             </div>
           </div>
 
-          <div className="card shadow-sm">
-            <div className="card-header bg-danger text-white">
+          <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+            <div className="card-header border-0" style={{ 
+              backgroundColor: '#dc3545',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
               Emergency Contact
             </div>
-            <div className="card-body">
-              <p>
+            <div className="card-body" style={{ backgroundColor: 'white' }}>
+              <p style={{ color: '#121517' }}>
                 <strong>Name:</strong> {profile?.emergencyContact?.name || "Not available"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Relationship:</strong> {profile?.emergencyContact?.relationship || "N/A"}
               </p>
-              <p>
+              <p style={{ color: '#121517' }}>
                 <strong>Contact Number:</strong> {profile?.emergencyContact?.contactNumber || "N/A"}
               </p>
             </div>
           </div>
 
           <div className="d-grid gap-2 mt-3">
-            <Link to="/edit-profile" className="btn btn-outline-secondary">
+            <Link 
+              to="/patient/edit-profile" 
+              className="btn border-0"
+              style={{ 
+                backgroundColor: 'rgba(70, 130, 180, 0.1)',
+                color: '#4682B4'
+              }}
+            >
               Edit Profile
             </Link>
           </div>
@@ -175,13 +219,21 @@ const PatientProfile: React.FC = () => {
         {/* Right Column: Appointment History */}
         <div className="col-md-8">
           <div
-            className="card shadow-sm position-sticky"
-            style={{ top: "1rem", zIndex: 10 }}
+            className="card border-0 shadow-sm position-sticky"
+            style={{ 
+              top: "1rem", 
+              zIndex: 10,
+              borderRadius: '12px'
+            }}
           >
-            <div className="card-header bg-success text-white">
+            <div className="card-header border-0" style={{ 
+              backgroundColor: '#28a745',
+              color: 'white',
+              borderRadius: '12px 12px 0 0'
+            }}>
               Appointment History
             </div>
-            <div className="card-body">
+            <div className="card-body" style={{ backgroundColor: 'white' }}>
               <AppointmentHistory />
             </div>
           </div>
@@ -189,11 +241,24 @@ const PatientProfile: React.FC = () => {
       </div>
 
       {/* Settings Section */}
-      <div className="card shadow-sm mt-4">
-        <div className="card-header bg-dark text-white">Settings</div>
-        <div className="card-body">
-          <p>Update your account preferences and settings.</p>
-          <Link to="/settings" className="btn btn-primary">
+      <div className="card border-0 shadow-sm mt-4" style={{ borderRadius: '12px' }}>
+        <div className="card-header border-0" style={{ 
+          backgroundColor: '#121517',
+          color: 'white',
+          borderRadius: '12px 12px 0 0'
+        }}>
+          Settings
+        </div>
+        <div className="card-body" style={{ backgroundColor: 'white' }}>
+          <p style={{ color: '#6c757d' }}>Update your account preferences and settings.</p>
+          <Link 
+            to="/settings" 
+            className="btn border-0"
+            style={{ 
+              backgroundColor: '#4682B4',
+              color: 'white'
+            }}
+          >
             Account Settings
           </Link>
         </div>

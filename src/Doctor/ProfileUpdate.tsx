@@ -31,11 +31,10 @@ const DoctorProfileEdit: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch current profile data
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/profile`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/me`, {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
           },
@@ -88,135 +87,163 @@ const DoctorProfileEdit: React.FC = () => {
 
       const updatedProfile = await response.json();
       login({ ...user, ...updatedProfile.medecin });
-      navigate("/doctor/dashboard"); // Rediriger vers la page de profil
+      navigate("/doctor/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile");
     }
   };
 
   if (loading) {
-    return <div className="text-center p-5">Loading profile data...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border" style={{ color: '#4682B4' }} role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Edit Your Profile</h2>
-      
-      {error && <div className="alert alert-danger mb-4">{error}</div>}
+    <div className="container py-5" style={{ backgroundColor: '#f5f7f9' }}>
+      <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+        <div className="card-body p-4 p-md-5">
+          <h2 className="mb-4" style={{ color: '#4682B4' }}>Edit Your Profile</h2>
+          
+          {error && (
+            <div className="alert border-0 mb-4" style={{ 
+              backgroundColor: 'rgba(220, 53, 69, 0.1)',
+              borderLeft: '4px solid #dc3545',
+              color: '#dc3545'
+            }}>
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">First Name</label>
-            <input
-              type="text"
-              className="form-control"
-              name="firstname"
-              value={formData.firstname}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">Last Name</label>
-            <input
-              type="text"
-              className="form-control"
-              name="lastname"
-              value={formData.lastname}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">Phone</label>
-            <input
-              type="tel"
-              className="form-control"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">Specialty</label>
-            <input
-              type="text"
-              className="form-control"
-              name="specialite"
-              value={formData.specialite}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">License Number</label>
-            <input
-              type="text"
-              className="form-control"
-              name="licenseNumber"
-              value={formData.licenseNumber}
-              onChange={handleChange}
-               
-            />
-          </div>
-          
-          <div className="col-md-6">
-            <label className="form-label">Date of Birth</label>
-            <input
-              type="date"
-              className="form-control"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-            />
-          </div>
-          
-          <div className="col-12">
-            <label className="form-label">Biography</label>
-            <textarea
-              className="form-control"
-              name="biography"
-              value={formData.biography || ""}
-              onChange={handleChange}
-              rows={5}
-            />
-          </div>
-          
-          <div className="col-12 d-flex justify-content-end gap-2 mt-4">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate("/doctor/dashboard")}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-            >
-              Save Changes
-            </button>
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>First Name</label>
+                <input
+                  type="text"
+                  className="form-control border-2"
+                  name="firstname"
+                  value={formData.firstname}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>Last Name</label>
+                <input
+                  type="text"
+                  className="form-control border-2"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>Email</label>
+                <input
+                  type="email"
+                  className="form-control border-2"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>Phone</label>
+                <input
+                  type="tel"
+                  className="form-control border-2"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>Specialty</label>
+                <input
+                  type="text"
+                  className="form-control border-2"
+                  name="specialite"
+                  value={formData.specialite}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>License Number</label>
+                <input
+                  type="text"
+                  className="form-control border-2"
+                  name="licenseNumber"
+                  value={formData.licenseNumber}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-md-6">
+                <label className="form-label" style={{ color: '#121517' }}>Date of Birth</label>
+                <input
+                  type="date"
+                  className="form-control border-2"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-12">
+                <label className="form-label" style={{ color: '#121517' }}>Biography</label>
+                <textarea
+                  className="form-control border-2"
+                  name="biography"
+                  value={formData.biography || ""}
+                  onChange={handleChange}
+                  rows={5}
+                  style={{ borderColor: '#9dbeda' }}
+                />
+              </div>
+              
+              <div className="col-12 d-flex justify-content-end gap-2 mt-4">
+                <button
+                  type="button"
+                  className="btn border-0"
+                  onClick={() => navigate("/doctor/dashboard")}
+                  style={{ 
+                    backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                    color: '#6c757d'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn border-0"
+                  style={{ 
+                    backgroundColor: '#4682B4',
+                    color: 'white'
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

@@ -29,6 +29,18 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
 
   const navigate = useNavigate();
 
+  const getAccessToken = () => {
+    const userData = localStorage.getItem("user");
+    if (!userData) return null;
+    try {
+      const user = JSON.parse(userData);
+      return user.accessToken;
+    } catch (err) {
+      console.error("Error parsing user data:", err);
+      return null;
+    }
+  };
+
   const handlePasswordUpdate = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -41,7 +53,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
         throw new Error("New password and confirmation don't match");
       }
 
-      const accessToken = localStorage.getItem("accessToken");
+      const accessToken = getAccessToken();
       if (!accessToken) throw new Error("Authentication required");
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/password`, {
@@ -50,7 +62,6 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
           "Content-Type": "application/json",
           "Authorization": `Bearer ${accessToken}`
         },
-        credentials: "include",
         body: JSON.stringify({
           oldPassword: currentPassword,
           newPassword: newPassword
@@ -79,7 +90,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
     setDeleteError("");
 
     try {
-      const accessToken = localStorage.getItem("accessToken");
+      const accessToken = getAccessToken();
       if (!accessToken) throw new Error("Authentication required");
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/deletemyaccount`, {
@@ -87,8 +98,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
         headers: {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
-        },
-        credentials: "include"
+        }
       });
 
       if (!response.ok) {
@@ -97,7 +107,8 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
       }
 
       // Clear local storage and redirect
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
       navigate("/", { state: { accountDeleted: true } });
 
     } catch (err) {
@@ -108,16 +119,52 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
   };
 
   return (
-    <Container className="mt-4">
-      <h1 className="mb-4">Account Settings</h1>
+    <Container className="mt-4" style={{ maxWidth: '800px' }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 style={{ color: 'var(--text)' }}>Account Settings</h1>
+        <Button 
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: 'var(--secondary)',
+            color: 'var(--text)',
+            border: '1px solid var(--primary)',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '0.375rem',
+            fontWeight: '500'
+          }}
+        >
+          <i className="fas fa-arrow-left me-2"></i> Back
+        </Button>
+      </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
+      {error && (
+        <Alert variant="danger" className="border-0 shadow-sm" style={{ 
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          borderLeft: '4px solid var(--accent)',
+          color: 'var(--text)',
+          borderRadius: '8px'
+        }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" className="border-0 shadow-sm" style={{ 
+          backgroundColor: 'rgba(40, 167, 69, 0.1)',
+          borderLeft: '4px solid #28a745',
+          color: 'var(--text)',
+          borderRadius: '8px'
+        }}>
+          {success}
+        </Alert>
+      )}
 
       <Form onSubmit={handlePasswordUpdate}>
         {/* Notification Preferences Section */}
-        <div className="mb-4 p-3 border rounded">
-          <h2>Notification Preferences</h2>
+        <div className="mb-4 p-4 border rounded" style={{ 
+          backgroundColor: 'var(--background)',
+          borderColor: 'var(--secondary)'
+        }}>
+          <h2 style={{ color: 'var(--text)', marginBottom: '1.5rem' }}>Notification Preferences</h2>
           <Form.Check 
             type="switch"
             id="email-notifications"
@@ -125,6 +172,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
             checked={emailNotifications}
             onChange={(e) => setEmailNotifications(e.target.checked)}
             disabled
+            style={{ color: 'var(--text)', marginBottom: '1rem' }}
           />
           <Form.Check
             type="switch"
@@ -133,42 +181,68 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
             checked={smsNotifications}
             onChange={(e) => setSmsNotifications(e.target.checked)}
             disabled
+            style={{ color: 'var(--text)' }}
           />
           <small className="text-muted">Notification preferences are currently read-only</small>
         </div>
 
         {/* Password Change Section */}
-        <div className="mb-4 p-3 border rounded">
-          <h2>Change Password</h2>
+        <div className="mb-4 p-4 border rounded" style={{ 
+          backgroundColor: 'var(--background)',
+          borderColor: 'var(--secondary)'
+        }}>
+          <h2 style={{ color: 'var(--text)', marginBottom: '1.5rem' }}>Change Password</h2>
           <Form.Group className="mb-3">
-            <Form.Label>Current Password</Form.Label>
+            <Form.Label style={{ color: 'var(--text)' }}>Current Password</Form.Label>
             <Form.Control
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
+              style={{ 
+                backgroundColor: 'white',
+                borderColor: 'var(--secondary)',
+                color: 'var(--text)'
+              }}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>New Password</Form.Label>
+            <Form.Label style={{ color: 'var(--text)' }}>New Password</Form.Label>
             <Form.Control
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              style={{ 
+                backgroundColor: 'white',
+                borderColor: 'var(--secondary)',
+                color: 'var(--text)'
+              }}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Confirm New Password</Form.Label>
+            <Form.Label style={{ color: 'var(--text)' }}>Confirm New Password</Form.Label>
             <Form.Control
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{ 
+                backgroundColor: 'white',
+                borderColor: 'var(--secondary)',
+                color: 'var(--text)'
+              }}
             />
           </Form.Group>
           <Button 
-            variant="primary" 
             type="submit"
             disabled={loading}
+            style={{ 
+              backgroundColor: 'var(--primary)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              fontWeight: '500'
+            }}
           >
             {loading ? "Updating..." : "Update Password"}
           </Button>
@@ -176,45 +250,92 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
       </Form>
 
       {/* Danger Zone */}
-      <div className="p-4 border border-danger rounded">
-        <h2 className="text-danger">Danger Zone</h2>
-        <p>Permanently delete your account and all associated data.</p>
+      <div className="p-4 border rounded" style={{ 
+        borderColor: 'var(--accent)',
+        backgroundColor: 'rgba(220, 53, 69, 0.05)'
+      }}>
+        <h2 style={{ color: 'var(--accent)', marginBottom: '1.5rem' }}>Danger Zone</h2>
+        <p style={{ color: 'var(--text)' }}>Permanently delete your account and all associated data.</p>
         <Button
-          variant="outline-danger"
           onClick={() => setShowDeleteModal(true)}
+          style={{ 
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            color: 'var(--accent)',
+            borderColor: 'var(--accent)',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '0.375rem',
+            fontWeight: '500'
+          }}
         >
           Delete Account
         </Button>
       </div>
 
       {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Account Deletion</Modal.Title>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+        <Modal.Header closeButton style={{ 
+          backgroundColor: 'var(--background)',
+          borderBottomColor: 'var(--secondary)'
+        }}>
+          <Modal.Title style={{ color: 'var(--text)' }}>Confirm Account Deletion</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ backgroundColor: 'var(--background)' }}>
           <p className="text-danger">
             <strong>Warning:</strong> This action cannot be undone. All your data will be permanently deleted.
           </p>
-          <p>To confirm, please type <strong>DELETE</strong> below:</p>
+          <p style={{ color: 'var(--text)' }}>To confirm, please type <strong>DELETE</strong> below:</p>
           
           <Form.Control
             type="text"
             value={deleteConfirmation}
             onChange={(e) => setDeleteConfirmation(e.target.value)}
             placeholder="Type DELETE"
+            style={{ 
+              backgroundColor: 'white',
+              borderColor: 'var(--secondary)',
+              color: 'var(--text)'
+            }}
           />
 
-          {deleteError && <Alert variant="danger" className="mt-3">{deleteError}</Alert>}
+          {deleteError && (
+            <Alert variant="danger" className="mt-3 border-0 shadow-sm" style={{ 
+              backgroundColor: 'rgba(220, 53, 69, 0.1)',
+              borderLeft: '4px solid var(--accent)',
+              color: 'var(--text)',
+              borderRadius: '8px'
+            }}>
+              {deleteError}
+            </Alert>
+          )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+        <Modal.Footer style={{ 
+          backgroundColor: 'var(--background)',
+          borderTopColor: 'var(--secondary)'
+        }}>
+          <Button 
+            onClick={() => setShowDeleteModal(false)}
+            style={{ 
+              backgroundColor: 'var(--secondary)',
+              color: 'var(--text)',
+              border: '1px solid var(--primary)',
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              fontWeight: '500'
+            }}
+          >
             Cancel
           </Button>
           <Button
-            variant="danger"
             onClick={handleAccountDeletion}
             disabled={deleteConfirmation !== "DELETE" || isDeleting}
+            style={{ 
+              backgroundColor: 'var(--accent)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              fontWeight: '500'
+            }}
           >
             {isDeleting ? (
               <>

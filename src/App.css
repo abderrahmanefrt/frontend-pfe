@@ -147,3 +147,12 @@ a:hover {
   background-color: #4682B4 !important;
   border-color: #4682B4 !important;
 }
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.btn-danger:disabled {
+  opacity: 0.65;
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"; // Added for navigation
 import DoctorCard from "../components/DoctorCard";
 import ScheduleAppointment from "./ScheduleAppointment";
 import MapModal from "../components/MapModal";
@@ -26,6 +27,7 @@ interface Doctor {
 
 const DoctorSearchWithCalendar: React.FC = () => {
   const { getAccessToken } = useAuth();
+  const navigate = useNavigate(); // Navigation hook
   const [specialty, setSpecialty] = useState("");
   const [displayLocation, setDisplayLocation] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -51,14 +53,14 @@ const DoctorSearchWithCalendar: React.FC = () => {
         params.append("latitude", locationCoords.lat.toString());
         params.append("longitude", locationCoords.lng.toString());
         params.append("distance", "15");
-      } else if (specialty || firstname || minRating || filterDate || filterTime) {
+      } else if (specialty || firstname || minRating || filterDate) {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/SearchMedecin`;
         if (specialty) params.append("specialite", specialty);
         if (firstname) params.append("firstname", firstname);
+        if (filterDate) params.append("date", filterDate);
         params.append("page", "1");
         params.append("limit", "20");
-      }
-       else {
+      } else {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/users/listofdoctors`;
       }
 
@@ -123,7 +125,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, [specialty,firstname, locationCoords, filterDate, filterTime]);
+  }, [specialty, firstname, locationCoords, filterDate, filterTime]);
 
   const handleTimeSelect = (date: Date, time: string) => {
     const dateStr = date.toISOString().split("T")[0];
@@ -144,7 +146,24 @@ const DoctorSearchWithCalendar: React.FC = () => {
 
   return (
     <div className="container mt-4">
-      <h1>Find a Doctor</h1>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1>Find a Doctor</h1>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="btn"
+          style={{
+            backgroundColor: 'var(--secondary)',
+            color: 'var(--text)',
+            border: '1px solid var(--primary)',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '0.375rem',
+            fontWeight: '500'
+          }}
+        >
+          <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </button>
+      </div>
+
       <form onSubmit={(e) => { e.preventDefault(); fetchDoctors(); }} className="mb-4">
         <div className="row g-3">
           <div className="col-md-3">
@@ -158,15 +177,15 @@ const DoctorSearchWithCalendar: React.FC = () => {
             />
           </div>
           <div className="col-md-3">
-  <label className="form-label">First Name</label>
-  <input
-    type="text"
-    className="form-control"
-    value={firstname}
-    onChange={(e) => setFirstname(e.target.value)}
-    placeholder="e.g., Ahmed"
-  />
-</div>
+            <label className="form-label">First Name</label>
+            <input
+              type="text"
+              className="form-control"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              placeholder="e.g., Ahmed"
+            />
+          </div>
 
           <div className="col-md-3">
             <label className="form-label">Location</label>
@@ -206,7 +225,16 @@ const DoctorSearchWithCalendar: React.FC = () => {
             </select>
           </div>
           <div className="col-md-3 d-flex align-items-end">
-            <button className="btn btn-primary w-100" disabled={loading}>
+            <button 
+              className="btn w-100" 
+              disabled={loading}
+              style={{
+                backgroundColor: loading ? 'var(--secondary)' : 'var(--primary)',
+                color: 'white',
+                border: 'none',
+                transition: 'background-color 0.2s ease'
+              }}
+            >
               {loading ? "Searching..." : "Search"}
             </button>
           </div>
