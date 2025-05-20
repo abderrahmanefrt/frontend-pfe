@@ -3,9 +3,9 @@ import { useAuth } from "../context/AuthContext";
 
 interface TimeSlot {
   id: number;
-  date: string;       // Format: "YYYY-MM-DD"
-  startTime: string;  // Format: "HH:MM"
-  endTime: string;    // Format: "HH:MM"
+  date: string;
+  startTime: string;
+  endTime: string;
   maxPatient: number;
 }
 
@@ -21,7 +21,6 @@ const DoctorSchedule: React.FC = () => {
     maxPatients: 1
   });
 
-  // Fetch existing slots with error handling
   const fetchSlots = async () => {
     try {
       const response = await fetch(
@@ -38,8 +37,6 @@ const DoctorSchedule: React.FC = () => {
       }
   
       const data = await response.json();
-  
-      // Utilise les créneaux à venir uniquement
       const formattedSlots = data.a_venir.map((slot: any) => ({
         id: slot.id,
         date: slot.date,
@@ -57,7 +54,6 @@ const DoctorSchedule: React.FC = () => {
     }
   };
   
-
   useEffect(() => {
     if (user?.accessToken) {
       fetchSlots();
@@ -102,8 +98,7 @@ const DoctorSchedule: React.FC = () => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add slot");
+        throw new Error("Failed to add slot");
       }
 
       await fetchSlots();
@@ -148,7 +143,7 @@ const DoctorSchedule: React.FC = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center my-5">
-        <div className="spinner-border" style={{ color: '#4682B4' }} role="status">
+        <div className="spinner-border" style={{ color: 'var(--primary)' }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -156,10 +151,7 @@ const DoctorSchedule: React.FC = () => {
   }
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4" style={{ color: '#4682B4' }}>Your Schedule</h2>
-
-      {/* Error Display */}
+    <div className="container-fluid p-0">
       {error && (
         <div className="alert border-0 shadow-sm mb-4" style={{ 
           backgroundColor: 'rgba(220, 53, 69, 0.1)',
@@ -179,7 +171,7 @@ const DoctorSchedule: React.FC = () => {
       {/* Add New Slot Form */}
       <div className="card mb-4 border-0 shadow-sm" style={{ borderRadius: '12px' }}>
         <div className="card-header border-0" style={{ 
-          backgroundColor: '#4682B4',
+          backgroundColor: 'var(--primary)',
           color: 'white',
           borderRadius: '12px 12px 0 0'
         }}>
@@ -188,7 +180,7 @@ const DoctorSchedule: React.FC = () => {
         <div className="card-body" style={{ backgroundColor: 'white' }}>
           <div className="row g-3">
             <div className="col-md-3">
-              <label className="form-label" style={{ color: '#121517' }}>Date</label>
+              <label className="form-label" style={{ color: 'var(--text)' }}>Date</label>
               <input
                 type="date"
                 className="form-control border-2"
@@ -196,11 +188,11 @@ const DoctorSchedule: React.FC = () => {
                 value={newSlot.date}
                 onChange={handleInputChange}
                 required
-                style={{ borderColor: '#9dbeda' }}
+                style={{ borderColor: 'var(--secondary)' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label" style={{ color: '#121517' }}>Start Time</label>
+              <label className="form-label" style={{ color: 'var(--text)' }}>Start Time</label>
               <input
                 type="time"
                 className="form-control border-2"
@@ -208,11 +200,11 @@ const DoctorSchedule: React.FC = () => {
                 value={newSlot.startTime}
                 onChange={handleInputChange}
                 required
-                style={{ borderColor: '#9dbeda' }}
+                style={{ borderColor: 'var(--secondary)' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label" style={{ color: '#121517' }}>End Time</label>
+              <label className="form-label" style={{ color: 'var(--text)' }}>End Time</label>
               <input
                 type="time"
                 className="form-control border-2"
@@ -220,11 +212,11 @@ const DoctorSchedule: React.FC = () => {
                 value={newSlot.endTime}
                 onChange={handleInputChange}
                 required
-                style={{ borderColor: '#9dbeda' }}
+                style={{ borderColor: 'var(--secondary)' }}
               />
             </div>
             <div className="col-md-2">
-              <label className="form-label" style={{ color: '#121517' }}>Max Patients</label>
+              <label className="form-label" style={{ color: 'var(--text)' }}>Max Patients</label>
               <input
                 type="number"
                 min="1"
@@ -232,7 +224,7 @@ const DoctorSchedule: React.FC = () => {
                 name="maxPatients"
                 value={newSlot.maxPatients}
                 onChange={handleInputChange}
-                style={{ borderColor: '#9dbeda' }}
+                style={{ borderColor: 'var(--secondary)' }}
               />
             </div>
             <div className="col-md-3 d-flex align-items-end">
@@ -240,9 +232,8 @@ const DoctorSchedule: React.FC = () => {
                 className="btn w-100 border-0"
                 onClick={handleAddSlot}
                 style={{ 
-                  backgroundColor: '#4682B4',
-                  color: 'white',
-                  height: '38px'
+                  backgroundColor: 'var(--primary)',
+                  color: 'white'
                 }}
               >
                 Add Slot
@@ -258,28 +249,28 @@ const DoctorSchedule: React.FC = () => {
           backgroundColor: 'white',
           borderRadius: '12px 12px 0 0'
         }}>
-          <h5 className="mb-0" style={{ color: '#121517' }}>Your Availability</h5>
+          <h5 className="mb-0" style={{ color: 'var(--text)' }}>Your Availability</h5>
         </div>
-        <div className="card-body p-0" style={{ backgroundColor: 'white', borderRadius: '0 0 12px 12px' }}>
+        <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-hover mb-0">
-              <thead style={{ backgroundColor: '#f5f7f9' }}>
+              <thead style={{ backgroundColor: 'var(--secondary)' }}>
                 <tr>
-                  <th style={{ color: '#4682B4' }}>Date</th>
-                  <th style={{ color: '#4682B4' }}>Start Time</th>
-                  <th style={{ color: '#4682B4' }}>End Time</th>
-                  <th style={{ color: '#4682B4' }}>Max Patients</th>
-                  <th style={{ color: '#4682B4' }}>Actions</th>
+                  <th style={{ color: 'var(--primary)' }}>Date</th>
+                  <th style={{ color: 'var(--primary)' }}>Start Time</th>
+                  <th style={{ color: 'var(--primary)' }}>End Time</th>
+                  <th style={{ color: 'var(--primary)' }}>Max Patients</th>
+                  <th style={{ color: 'var(--primary)' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {slots.length > 0 ? (
                   slots.map((slot) => (
                     <tr key={slot.id}>
-                      <td style={{ color: '#121517' }}>{slot.date}</td>
-                      <td style={{ color: '#121517' }}>{slot.startTime}</td>
-                      <td style={{ color: '#121517' }}>{slot.endTime}</td>
-                      <td style={{ color: '#121517' }}>{slot.maxPatient}</td>
+                      <td style={{ color: 'var(--text)' }}>{slot.date}</td>
+                      <td style={{ color: 'var(--text)' }}>{slot.startTime}</td>
+                      <td style={{ color: 'var(--text)' }}>{slot.endTime}</td>
+                      <td style={{ color: 'var(--text)' }}>{slot.maxPatient}</td>
                       <td>
                         <button
                           className="btn btn-sm border-0"
@@ -296,7 +287,7 @@ const DoctorSchedule: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center py-4" style={{ color: '#6c757d' }}>
+                    <td colSpan={5} className="text-center py-4" style={{ color: 'var(--text)' }}>
                       No time slots available
                     </td>
                   </tr>

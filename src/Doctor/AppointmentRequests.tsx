@@ -31,7 +31,13 @@ const AppointmentRequests: React.FC = () => {
       }
 
       const data = await response.json();
-      setRequests(data);
+      const filtered = data.filter((req: AppointmentRequest) => {
+        const dateTimeString = `${req.date}T${req.time || "00:00"}`;
+        const appointmentDate = new Date(dateTimeString);
+        return appointmentDate >= new Date(); // garde seulement les rendez-vous futurs
+      });
+      
+      setRequests(filtered);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -58,9 +64,6 @@ const AppointmentRequests: React.FC = () => {
       });
   
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Response status:", response.status);
-        console.error("Response body:", errorText);
         throw new Error("Failed to update appointment status.");
       }
   
@@ -72,21 +75,17 @@ const AppointmentRequests: React.FC = () => {
   };
 
   return (
-    <div className="container mt-4" style={{ backgroundColor: '#f5f7f9', padding: '2rem' }}>
-      <h2 className="mb-4" style={{ color: '#121517' }}>Appointment Requests</h2>
-
+    <div className="container-fluid p-0">
       {error && (
         <div className="alert border-0 shadow-sm mb-4" style={{ 
           backgroundColor: 'rgba(220, 53, 69, 0.1)',
-          borderLeft: '4px solid #dc3545',
-          color: '#dc3545'
+          borderLeft: '4px solid #dc3545'
         }}>
           <div className="d-flex justify-content-between align-items-center">
-            <span>{error}</span>
+            <span style={{ color: '#dc3545' }}>{error}</span>
             <button 
               className="btn-close" 
               onClick={() => setError(null)}
-              style={{ color: '#dc3545' }}
             />
           </div>
         </div>
@@ -94,78 +93,76 @@ const AppointmentRequests: React.FC = () => {
 
       {loading ? (
         <div className="d-flex justify-content-center my-5">
-          <div className="spinner-border" style={{ color: '#4682B4' }} role="status">
+          <div className="spinner-border" style={{ color: 'var(--primary)' }} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : (
-        <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
-          <div className="table-responsive">
-            <table className="table mb-0">
-              <thead style={{ backgroundColor: '#f5f7f9' }}>
+        <div className="table-responsive">
+          <table className="table mb-0">
+            <thead style={{ backgroundColor: 'var(--secondary)' }}>
+              <tr>
+                <th style={{ color: 'var(--primary)' }}>Patient</th>
+                <th style={{ color: 'var(--primary)' }}>Date</th>
+                <th style={{ color: 'var(--primary)' }}>Time</th>
+                <th style={{ color: 'var(--primary)' }}>Status</th>
+                <th style={{ color: 'var(--primary)' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.length === 0 ? (
                 <tr>
-                  <th style={{ color: '#4682B4' }}>Patient</th>
-                  <th style={{ color: '#4682B4' }}>Date</th>
-                  <th style={{ color: '#4682B4' }}>Time</th>
-                  <th style={{ color: '#4682B4' }}>Status</th>
-                  <th style={{ color: '#4682B4' }}>Actions</th>
+                  <td colSpan={5} className="text-center py-4" style={{ color: 'var(--text)' }}>
+                    No appointment requests
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {requests.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-4" style={{ color: '#6c757d' }}>
-                      No appointment requests
+              ) : (
+                requests.map((req) => (
+                  <tr key={req.id}>
+                    <td style={{ color: 'var(--text)' }}>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
+                    <td style={{ color: 'var(--text)' }}>{req.date}</td>
+                    <td style={{ color: 'var(--text)' }}>{req.time || "Not specified"}</td>
+                    <td>
+                      <span className={`badge ${
+                        req.status === 'accepter' ? 'bg-success' : 
+                        req.status === 'refuser' ? 'bg-danger' : 'bg-warning'
+                      }`}>
+                        {req.status}
+                      </span>
+                    </td>
+                    <td>
+                      {req.status === "pending" ? (
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-sm border-0"
+                            onClick={() => updateStatus(req.id, "accepter")}
+                            style={{ 
+                              backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                              color: '#28a745'
+                            }}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="btn btn-sm border-0"
+                            onClick={() => updateStatus(req.id, "refuser")}
+                            style={{ 
+                              backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                              color: '#dc3545'
+                            }}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--text)' }}>No actions</span>
+                      )}
                     </td>
                   </tr>
-                ) : (
-                  requests.map((req) => (
-                    <tr key={req.id}>
-                      <td style={{ color: '#121517' }}>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
-                      <td style={{ color: '#121517' }}>{req.date}</td>
-                      <td style={{ color: '#121517' }}>{req.time || "Not specified"}</td>
-                      <td>
-                        <span className={`badge ${
-                          req.status === 'accepter' ? 'bg-success' : 
-                          req.status === 'refuser' ? 'bg-danger' : 'bg-warning'
-                        }`}>
-                          {req.status}
-                        </span>
-                      </td>
-                      <td>
-                        {req.status === "pending" ? (
-                          <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-sm border-0"
-                              onClick={() => updateStatus(req.id, "accepter")}
-                              style={{ 
-                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                                color: '#28a745'
-                              }}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              className="btn btn-sm border-0"
-                              onClick={() => updateStatus(req.id, "refuser")}
-                              style={{ 
-                                backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                                color: '#dc3545'
-                              }}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        ) : (
-                          <span style={{ color: '#6c757d' }}>No actions</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

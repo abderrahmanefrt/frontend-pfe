@@ -15,6 +15,7 @@ interface Doctor {
   licenseNumber: string;
   dateOfBirth: string;
   photo?: string;
+  biography?: string;
   availabilities: Availability[];
 }
 
@@ -173,6 +174,13 @@ const DoctorProfilePage: React.FC = () => {
               <Badge bg="info" className="mb-3">License: {doctor.licenseNumber}</Badge>
             </div>
           </div>
+          {doctor.biography && (
+  <div className="mt-3">
+    <h5 className="text-dark">Biography</h5>
+    <p className="text-muted" style={{ whiteSpace: 'pre-line' }}>{doctor.biography}</p>
+  </div>
+)}
+
 
           <hr />
 

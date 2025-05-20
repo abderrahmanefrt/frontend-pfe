@@ -1,10 +1,13 @@
+// DoctorSearchWithCalendar.tsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom"; // Added for navigation
+import { useNavigate } from "react-router-dom";
 import DoctorCard from "../components/DoctorCard";
 import ScheduleAppointment from "./ScheduleAppointment";
 import MapModal from "../components/MapModal";
 import { Spinner, Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faArrowLeft, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 interface Availability {
   date: string;
@@ -27,7 +30,7 @@ interface Doctor {
 
 const DoctorSearchWithCalendar: React.FC = () => {
   const { getAccessToken } = useAuth();
-  const navigate = useNavigate(); // Navigation hook
+  const navigate = useNavigate();
   const [specialty, setSpecialty] = useState("");
   const [displayLocation, setDisplayLocation] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -80,26 +83,31 @@ const DoctorSearchWithCalendar: React.FC = () => {
       }
 
       const data = await response.json();
+      console.log("Data reçue depuis l'API:", data);
+
       const medecins = data.medecins || data || [];
 
       const doctorsWithAvailabilityAndRating = await Promise.all(
         medecins.map(async (doc: any) => {
           try {
-            const [availRes, ratingRes] = await Promise.all([
-              fetch(`${import.meta.env.VITE_API_URL}/api/disponibilites/${doc.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              }),
+            const availabilityUrl = filterDate
+              ? `${import.meta.env.VITE_API_URL}/api/disponibilites/by-date/${doc.id}?date=${filterDate}`
+              : null;
+      
+            const [availData, ratingData] = await Promise.all([
+              availabilityUrl
+                ? fetch(availabilityUrl, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  }).then(res => res.json())
+                : Promise.resolve([]),
               fetch(`${import.meta.env.VITE_API_URL}/api/avis/rating/${doc.id}`, {
                 headers: { Authorization: `Bearer ${token}` },
-              }),
+              }).then(res => res.json()),
             ]);
-
-            const availData = await availRes.json();
-            const ratingData = await ratingRes.json();
-
+      
             return {
               ...doc,
-              availabilities: availData.a_venir || [],
+              availabilities: availData || [],
               rating: parseFloat(ratingData.averageRating || "0.0"),
             };
           } catch (err) {
@@ -108,7 +116,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
           }
         })
       );
-
+      
       const filteredByRating = minRating
         ? doctorsWithAvailabilityAndRating.filter((doc) => (doc.rating || 0) >= minRating)
         : doctorsWithAvailabilityAndRating;
@@ -131,6 +139,11 @@ const DoctorSearchWithCalendar: React.FC = () => {
     const dateStr = date.toISOString().split("T")[0];
     setFilterDate(dateStr);
     setFilterTime(time);
+  };
+
+  const clearDateTimeSelection = () => {
+    setFilterDate(null);
+    setFilterTime(null);
   };
 
   const openMap = () => setShowMapModal(true);
@@ -160,7 +173,8 @@ const DoctorSearchWithCalendar: React.FC = () => {
             fontWeight: '500'
           }}
         >
-          <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
+          <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+          Back to Dashboard
         </button>
       </div>
 
@@ -205,7 +219,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
                 className="btn btn-outline-secondary"
                 onClick={openMap}
               >
-                🗺️
+                <FontAwesomeIcon icon={faMapMarkerAlt} />
               </button>
             </div>
           </div>
@@ -242,7 +256,18 @@ const DoctorSearchWithCalendar: React.FC = () => {
       </form>
 
       <div className="mb-4">
-        <h2>Select Date & Time</h2>
+        <div className="d-flex align-items-center mb-2">
+          <h2 className="mb-0">Select Date & Time</h2>
+          {filterDate && (
+            <button 
+              onClick={clearDateTimeSelection}
+              className="btn btn-sm btn-outline-danger ms-2"
+              title="Clear selection"
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          )}
+        </div>
         <ScheduleAppointment onTimeSelect={handleTimeSelect} />
       </div>
 

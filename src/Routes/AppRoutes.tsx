@@ -29,7 +29,7 @@ import RescheduleAppointment from "../Patient/RescheduleAppointment";
 import DoctorDashboard from "../Doctor/DoctorDashboard";
 import DoctorProfileEdit from "../Doctor/ProfileUpdate";
 import ChangePassword from "../Doctor/ChangePassword";
-
+import AcceptedAppointments from "../Doctor/AcceptedAppointments";
 // Admin routes
 import AdminDashboard from "../Admin/AdminDashboard";
 import DoctorManagement from "../Admin/DoctorManagement";
@@ -106,6 +106,8 @@ function AppRoutes() {
 
       <Route path="/users/doctor/:id" element={<DoctorProfilePage />} />
       <Route path="/doctor/:id/review" element={<DoctorReviewWrapper />} />
+      <Route path="/doctor/accepted-appointments" element={<AcceptedAppointments />} />
+
 
     
 

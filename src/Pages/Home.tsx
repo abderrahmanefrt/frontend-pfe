@@ -17,7 +17,7 @@ const Home: React.FC = () => {
     minHeight: "500px",
     color: "white",
     position: "relative",
-    marginTop: "-4px ", // Removed marginTop
+    marginTop: "-20px ", // Removed marginTop
     top: "0",
     paddingTop: "56px",
     borderTop: "1px solid transparent"  // Added paddingTop instead to account for navbar

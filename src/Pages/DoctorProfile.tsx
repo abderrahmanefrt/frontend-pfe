@@ -18,6 +18,7 @@ interface DoctorProfileData {
   latitude: number;
   longitude: number;
   averageRating: number;
+  biography: string;
   Avis: Array<{
     id: number;
     comment: string;
@@ -66,7 +67,9 @@ const DoctorProfile: React.FC = () => {
           phone: data.phone.replace(/^"+|"+$/g, ''),
           specialite: data.specialite.replace(/^"+|"+$/g, ''),
           address: data.address.replace(/^"+|"+$/g, ''),
-          licenseNumber: data.licenseNumber.replace(/^"+|"+$/g, '')
+          licenseNumber: data.licenseNumber.replace(/^"+|"+$/g, ''),
+          biography: (data.biography ?? '').replace(/^"+|"+$/g, '')
+
         };
         setDoctor(cleanedData);
       } catch (err) {
@@ -175,6 +178,7 @@ const DoctorProfile: React.FC = () => {
                   backgroundColor: 'transparent',
                   borderColor: '#e9ecef'
                 }}>
+                  
                   <i className="bi bi-telephone me-2" style={{ color: '#4682B4' }}></i>
                   <span style={{ color: '#121517' }}>{doctor.phone}</span>
                 </ListGroup.Item>
@@ -211,7 +215,18 @@ const DoctorProfile: React.FC = () => {
                 ></iframe>
               </div>
             </div>
+            <div className="mt-4">
+  <h3 className="mb-3" style={{ color: '#4682B4' }}>Biography</h3>
+  <p style={{ color: '#121517', whiteSpace: 'pre-line' }}>
+    {doctor.biography?.trim() || 'No biography available.'}
+  </p>
+</div>
+
           </div>
+          <hr style={{ borderColor: '#e9ecef' }} />
+
+
+
 
           <div className="d-flex justify-content-end mt-4">
             <Button 
