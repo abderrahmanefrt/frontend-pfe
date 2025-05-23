@@ -8,6 +8,7 @@ interface DoctorCardProps {
   doctorId: number;
   doctorName: string;
   photo?: string;
+  rating?: number;
   onScheduleClick?: (doctorId: number) => void;
 }
 
@@ -16,6 +17,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   doctorId,
   doctorName,
   photo,
+  rating = 0,
   onScheduleClick
 }) => {
   const [imageState, setImageState] = useState({
@@ -23,8 +25,6 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
     loaded: false,
     error: false
   });
-
-  const [averageRating, setAverageRating] = useState<number>(0);
 
   useEffect(() => {
     const loadImage = async () => {
@@ -77,33 +77,6 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
     loadImage();
   }, [photo, doctorId]);
 
-  useEffect(() => {
-    const fetchAverageRating = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/avis/medecin/${doctorId}/average-rating`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.averageRating) {
-          setAverageRating(parseFloat(data.averageRating) || 0);
-        } else {
-          throw new Error("Invalid response format");
-        }
-      } catch (error) {
-        console.error("Failed to fetch average rating:", error);
-        setAverageRating(0);
-      }
-    };
-
-    fetchAverageRating();
-  }, [doctorId]);
-
   const handleScheduleClick = () => {
     onScheduleClick?.(doctorId);
   };
@@ -132,15 +105,15 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
             />
             <div className="doctor-rating-badge">
               <div className="bg-white shadow-sm rounded-pill px-3 py-1 d-flex align-items-center">
-                <StarRating value={averageRating} readOnly />
-                <span className="ms-1 fw-bold">{averageRating.toFixed(1)}</span>
+                <StarRating value={rating} readOnly />
+                <span className="ms-1 fw-bold">{rating.toFixed(1)}</span>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="card-body d-flex flex-column p-4">
+      <div className="card-body">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="card-title mb-0 fw-bold" style={{ color: 'var(--text)' }}>{doctorName}</h5>
           <span className="badge rounded-pill px-2" style={{ 
@@ -155,13 +128,12 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
         <div className="mb-3 pb-2 border-bottom" style={{ borderColor: 'var(--secondary)' }}>
           <div className="d-flex align-items-center small" style={{ color: 'var(--text)' }}>
             <i className="fas fa-star-half-alt me-1" style={{ color: 'var(--accent)' }}></i>
-            <span>{averageRating.toFixed(1)} out of 5</span>
+            <span>{rating.toFixed(1)} out of 5</span>
             <span className="mx-2">•</span>
             <span>Professional Care</span>
           </div>
         </div>
 
-        {/* Informations sur le médecin */}
         <div className="mb-3 flex-grow-1">
           <ListGroup
             items={doctorInfo}
@@ -170,35 +142,32 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           />
         </div>
 
-        {/* Boutons pour consulter le profil et prendre un rendez-vous */}
-        <div className="mt-auto pt-3">
-          <div className="d-grid gap-2">
-            <div className="row g-2">
-              <div className="col-6">
-                <Link 
-                  to={`/users/doctor/${doctorId}`} 
-                  className="btn w-100" 
-                  style={{
-                    backgroundColor: 'var(--primary)',
-                    color: 'white'
-                  }}
-                >
-                  <i className="fas fa-user-md me-2"></i>View Profile
-                </Link>
-              </div>
-              <div className="col-6">
-                <Link
-                  to={`/appointments/${doctorId}`} 
-                  onClick={handleScheduleClick}
-                  className="btn w-100" 
-                  style={{
-                    backgroundColor: 'var(--accent)',
-                    color: 'white'
-                  }}
-                >
-                  <i className="fas fa-calendar-check me-2"></i>Schedule
-                </Link>
-              </div>
+        <div className="d-grid gap-2">
+          <div className="row g-2">
+            <div className="col-6">
+              <Link 
+                to={`/users/doctor/${doctorId}`} 
+                className="btn w-100" 
+                style={{
+                  backgroundColor: 'var(--primary)',
+                  color: 'white'
+                }}
+              >
+                <i className="fas fa-user-md me-2"></i>View Profile
+              </Link>
+            </div>
+            <div className="col-6">
+              <Link
+                to={`/appointments/${doctorId}`} 
+                onClick={handleScheduleClick}
+                className="btn w-100" 
+                style={{
+                  backgroundColor: 'var(--accent)',
+                  color: 'white'
+                }}
+              >
+                <i className="fas fa-calendar-check me-2"></i>Schedule
+              </Link>
             </div>
           </div>
         </div>
@@ -254,6 +223,7 @@ export default React.memo(DoctorCard, (prevProps, nextProps) => {
     prevProps.doctorId === nextProps.doctorId &&
     prevProps.photo === nextProps.photo &&
     prevProps.doctorName === nextProps.doctorName &&
+    prevProps.rating === nextProps.rating &&
     JSON.stringify(prevProps.doctorInfo) === JSON.stringify(nextProps.doctorInfo)
   );
 });

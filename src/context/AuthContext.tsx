@@ -17,7 +17,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<User>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<User>;
   logout: () => void;
   updateUser: (updatedUser: User) => void;
   getAccessToken: () => string;
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(
-    () => JSON.parse(localStorage.getItem("user") || "null")
+    () => JSON.parse(localStorage.getItem("user") || sessionStorage.getItem("user") || "null")
   );
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rememberMe = false): Promise<User> => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",
@@ -71,7 +71,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
   
       setUser(loggedInUser);
-      localStorage.setItem("user", JSON.stringify(loggedInUser));
+      if (rememberMe) {
+        localStorage.setItem("user", JSON.stringify(loggedInUser));
+        sessionStorage.removeItem("user");
+      } else {
+        sessionStorage.setItem("user", JSON.stringify(loggedInUser));
+        localStorage.removeItem("user");
+      }
   
       if (user.role === "admin") {
         navigate("/admin");
@@ -80,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (user.role === "user") {
         navigate("/dashboard");
       }
+      return loggedInUser;
     } catch (error) {
       console.error("Login error:", error);  // Log the error
       throw new Error("Login failed");
@@ -90,12 +97,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
     navigate("/");
   };
 
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
+    sessionStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   const getAccessToken = () => {

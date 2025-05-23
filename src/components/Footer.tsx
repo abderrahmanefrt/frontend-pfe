@@ -87,19 +87,19 @@ function Footer() {
             <ul className="list-unstyled">
               <li className="mb-3 d-flex">
                 <i className="bi bi-geo-alt-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
-                <span style={{ opacity: 0.75 }}>123 Rue Didouche Mourad, Alger Centre, Algeria</span>
+                <span style={{ opacity: 0.75 }}>Bab ezouar, Alger, Algeria</span>
               </li>
               <li className="mb-3 d-flex">
                 <i className="bi bi-envelope-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
-                <span style={{ opacity: 0.75 }}>contact@indoctor.dz</span>
+                <span style={{ opacity: 0.75 }}>Indoctor@gmail.com</span>
               </li>
               <li className="mb-3 d-flex">
                 <i className="bi bi-telephone-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
-                <span style={{ opacity: 0.75 }}>+213 560 123 456</span>
+                <span style={{ opacity: 0.75 }}>+213 777 736 165</span>
               </li>
               <li className="mb-3 d-flex">
                 <i className="bi bi-clock-fill me-3 mt-1 fs-5" style={{ color: '#4682B4' }}></i>
-                <span style={{ opacity: 0.75 }}>Mon-Fri: 8am-5pm | Sat: 8am-12pm</span>
+                <span style={{ opacity: 0.75 }}></span>
               </li>
             </ul>
           </div>

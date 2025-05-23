@@ -217,7 +217,22 @@ const AdminDashboard: React.FC = () => {
         >
           View Appointments
         </button>
+        <button 
+    className="btn"
+    onClick={() => navigate('/admin/comments')}
+    style={{
+      backgroundColor: 'rgba(var(--primary-rgb), 0.1)',
+      color: 'var(--primary)',
+      border: '1px solid var(--primary)',
+      padding: '0.5rem 1.5rem',
+      borderRadius: '0.375rem',
+      fontWeight: '500'
+    }}
+  >
+    Manage Comments
+  </button>
       </div>
+      
 
       {/* Cartes de statistiques */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

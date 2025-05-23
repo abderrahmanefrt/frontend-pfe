@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
-const getAccessToken = () => {
-  const userData = localStorage.getItem("user");
-  if (!userData) return null;
-  try {
-    const user = JSON.parse(userData);
-    return user.accessToken;
-  } catch (err) {
-    console.error("Error parsing user data:", err);
-    return null;
-  }
-};
+import { useAuth } from "../context/AuthContext";
 
 const DoctorAvailabilityPage = () => {
   const { medecinId } = useParams<{ medecinId: string }>();
   const navigate = useNavigate();
   const [availabilities, setAvailabilities] = useState<any[]>([]);
   const [error, setError] = useState("");
+  const { getAccessToken, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      const token = getAccessToken();
+      if (!token || !user) {
+        navigate("/login");
+      }
+    }
+  }, [medecinId, navigate, getAccessToken, user, loading]);
 
   useEffect(() => {
     const fetchAvailabilities = async () => {
       try {
+        if (loading || !user) return;
+
         const token = getAccessToken();
         if (!token) {
-          navigate("/login");
           return;
         }
 
@@ -47,8 +47,10 @@ const DoctorAvailabilityPage = () => {
       }
     };
 
-    fetchAvailabilities();
-  }, [medecinId, navigate]);
+    if (medecinId && user && !loading) {
+      fetchAvailabilities();
+    }
+  }, [medecinId, navigate, getAccessToken, user, loading]);
 
   return (
     <div className="container py-4" style={{ maxWidth: '1200px' }}>

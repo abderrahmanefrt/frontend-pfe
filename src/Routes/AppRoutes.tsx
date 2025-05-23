@@ -41,6 +41,7 @@ import AdminEditPatientProfileWrapper from "../Admin/AdminEditPatientProfileWrap
 import AdminEditDoctorWrapper from "../Admin/AdminEditDoctorWrapper";
 import DoctorsList from "../Admin/DoctorsList";
 import ManageDoctorReviews from "../Admin/ReviewsManagement";
+import ManageComments from "../Admin/managecomments";
 
 function AppRoutes() {
   return (
@@ -172,6 +173,8 @@ function AppRoutes() {
         }
       />
       <Route path="/admin/avis/:doctorId" element={<ManageDoctorReviews />} />
+      <Route path="/admin/comments" element={<ManageComments />} />
+
 
       <Route
         path="/admin/users"

@@ -8,7 +8,7 @@ interface AppointmentRequest {
     lastname: string;
   };
   date: string;
-  time: string;
+  time: string | null;
   status: "pending" | "accepter" | "refuser";
 }
 
@@ -30,13 +30,23 @@ const AppointmentRequests: React.FC = () => {
         throw new Error("Failed to load appointments.");
       }
 
-      const data = await response.json();
-      const filtered = data.filter((req: AppointmentRequest) => {
-        const dateTimeString = `${req.date}T${req.time || "00:00"}`;
-        const appointmentDate = new Date(dateTimeString);
-        return appointmentDate >= new Date(); // garde seulement les rendez-vous futurs
+      const data: AppointmentRequest[] = await response.json();
+
+      // Ajout d'un log de debug si nécessaire :
+      console.log("Appointments reçus :", data);
+
+      // Correction du filtre
+      const now = new Date();
+      const filtered = data.filter((req) => {
+        try {
+          const time = req.time?.padStart(5, "0") || "00:00";
+          const dateTime = new Date(`${req.date}T${time}`);
+          return !isNaN(dateTime.getTime()) && dateTime >= now;
+        } catch {
+          return false;
+        }
       });
-      
+
       setRequests(filtered);
     } catch (err) {
       console.error(err);
@@ -62,11 +72,11 @@ const AppointmentRequests: React.FC = () => {
         },
         body: JSON.stringify({ status }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to update appointment status.");
       }
-  
+
       await fetchAppointments();
     } catch (err) {
       console.error(err);
@@ -77,16 +87,13 @@ const AppointmentRequests: React.FC = () => {
   return (
     <div className="container-fluid p-0">
       {error && (
-        <div className="alert border-0 shadow-sm mb-4" style={{ 
+        <div className="alert border-0 shadow-sm mb-4" style={{
           backgroundColor: 'rgba(220, 53, 69, 0.1)',
           borderLeft: '4px solid #dc3545'
         }}>
           <div className="d-flex justify-content-between align-items-center">
             <span style={{ color: '#dc3545' }}>{error}</span>
-            <button 
-              className="btn-close" 
-              onClick={() => setError(null)}
-            />
+            <button className="btn-close" onClick={() => setError(null)} />
           </div>
         </div>
       )}
@@ -119,12 +126,14 @@ const AppointmentRequests: React.FC = () => {
               ) : (
                 requests.map((req) => (
                   <tr key={req.id}>
-                    <td style={{ color: 'var(--text)' }}>{req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}</td>
+                    <td style={{ color: 'var(--text)' }}>
+                      {req.User?.firstname ?? "N/A"} {req.User?.lastname ?? ""}
+                    </td>
                     <td style={{ color: 'var(--text)' }}>{req.date}</td>
                     <td style={{ color: 'var(--text)' }}>{req.time || "Not specified"}</td>
                     <td>
                       <span className={`badge ${
-                        req.status === 'accepter' ? 'bg-success' : 
+                        req.status === 'accepter' ? 'bg-success' :
                         req.status === 'refuser' ? 'bg-danger' : 'bg-warning'
                       }`}>
                         {req.status}
@@ -136,7 +145,7 @@ const AppointmentRequests: React.FC = () => {
                           <button
                             className="btn btn-sm border-0"
                             onClick={() => updateStatus(req.id, "accepter")}
-                            style={{ 
+                            style={{
                               backgroundColor: 'rgba(40, 167, 69, 0.1)',
                               color: '#28a745'
                             }}
@@ -146,7 +155,7 @@ const AppointmentRequests: React.FC = () => {
                           <button
                             className="btn btn-sm border-0"
                             onClick={() => updateStatus(req.id, "refuser")}
-                            style={{ 
+                            style={{
                               backgroundColor: 'rgba(220, 53, 69, 0.1)',
                               color: '#dc3545'
                             }}

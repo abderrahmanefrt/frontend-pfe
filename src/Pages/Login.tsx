@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [formKey, setFormKey] = useState(0);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
     } catch (err) {
-      console.error("Login error:", err);
+      setPassword("");
+      setFormKey(k => k + 1);
+      if (passwordRef.current) passwordRef.current.focus();
       alert("Login failed. Please check your credentials and try again.");
     }
   };
@@ -32,7 +37,7 @@ const LoginForm: React.FC = () => {
             <p className="mb-0" style={{ color: '#6c757d' }}>Please enter your credentials to login</p>
           </div>
           
-          <form onSubmit={handleSubmit}>
+          <form key={formKey} onSubmit={handleSubmit}>
             {/* Email */}
             <div className="mb-3">
               <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#121517' }}>
@@ -58,6 +63,7 @@ const LoginForm: React.FC = () => {
               <input
                 type="password"
                 id="password"
+                ref={passwordRef}
                 className="form-control py-2 border-2"
                 placeholder="Enter your password"
                 value={password}
@@ -83,7 +89,9 @@ const LoginForm: React.FC = () => {
                 <input 
                   type="checkbox" 
                   className="form-check-input" 
-                  id="rememberMe" 
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
                   style={{ 
                     borderColor: '#9dbeda',
                     width: '1.1em',

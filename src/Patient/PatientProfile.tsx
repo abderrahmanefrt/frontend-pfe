@@ -84,15 +84,39 @@ const PatientProfile: React.FC = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <Spinner animation="border" style={{ color: '#4682B4' }} />
+        <Spinner animation="border" style={{ color: 'var(--primary)' }} />
       </div>
     );
   }
 
+  // Avatar initials
+  const initials = (profile?.firstname?.[0] || "P") + (profile?.lastname?.[0] || "");
+
   return (
-    <div className="container py-4" style={{ backgroundColor: '#f5f7f9' }}>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 style={{ color: '#121517' }}>Patient Profile</h1>
+    <div className="container py-4" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3">
+        <div className="d-flex align-items-center gap-3">
+          <div className="rounded-circle d-flex justify-content-center align-items-center shadow"
+            style={{
+              width: 80,
+              height: 80,
+              fontSize: '2.2rem',
+              background: 'var(--primary)',
+              color: 'white',
+              fontWeight: 700,
+              border: '4px solid var(--secondary)',
+              boxShadow: '0 2px 12px rgba(70,130,180,0.10)'
+            }}
+          >
+            {initials}
+          </div>
+          <div>
+            <h1 className="mb-1" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '2rem' }}>
+              {profile?.firstname} {profile?.lastname || "Guest"}
+            </h1>
+            <div className="text-muted" style={{ fontSize: '1rem' }}>{profile?.email}</div>
+          </div>
+        </div>
         <button
           onClick={() => navigate('/dashboard')}
           className="btn"
@@ -102,101 +126,114 @@ const PatientProfile: React.FC = () => {
             border: '1px solid var(--primary)',
             padding: '0.5rem 1.5rem',
             borderRadius: '0.375rem',
-            fontWeight: '500'
+            fontWeight: '500',
+            boxShadow: '0 2px 8px rgba(100,162,212,0.08)'
           }}
         >
           <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
         </button>
       </div>
 
-      <div className="row">
+      <div className="row g-4">
         {/* Left Column: Profile Information */}
-        <div className="col-md-4 overflow-auto" style={{ maxHeight: "80vh" }}>
-          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+        <div className="col-md-4">
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0" style={{ 
-              backgroundColor: '#4682B4',
+              backgroundColor: 'var(--primary)',
               color: 'white',
-              borderRadius: '12px 12px 0 0'
+              borderRadius: '16px 16px 0 0',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px'
             }}>
               Personal Information
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Name:</strong> {profile?.firstname} {profile?.lastname || "Guest"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Date of Birth:</strong> {profile?.dateOfBirth || "N/A"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Gender:</strong> {profile?.gender || "N/A"}
               </p>
             </div>
           </div>
 
-          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0" style={{ 
-              backgroundColor: '#64a2d4',
+              backgroundColor: 'var(--accent)',
               color: 'white',
-              borderRadius: '12px 12px 0 0'
+              borderRadius: '16px 16px 0 0',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px'
             }}>
               Contact Details
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Phone:</strong> {profile?.phone || "Not available"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Email:</strong> {profile?.email}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Address:</strong> {profile?.address || "Not provided"}
               </p>
             </div>
           </div>
 
-          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0" style={{ 
-              backgroundColor: '#9dbeda',
+              backgroundColor: 'var(--secondary)',
               color: 'white',
-              borderRadius: '12px 12px 0 0'
+              borderRadius: '16px 16px 0 0',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px'
             }}>
               Medical & Insurance
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Medical History:</strong> {profile?.medicalHistory || "No details"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Allergies:</strong> {profile?.allergies || "None"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Medications:</strong> {profile?.medications || "None"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Primary Care Physician:</strong> {profile?.primaryCarePhysician || "Not assigned"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Chifa Card Number:</strong> {profile?.chifaCardNumber || "Not provided"}
               </p>
             </div>
           </div>
 
-          <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0" style={{ 
               backgroundColor: '#dc3545',
               color: 'white',
-              borderRadius: '12px 12px 0 0'
+              borderRadius: '16px 16px 0 0',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px'
             }}>
               Emergency Contact
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Name:</strong> {profile?.emergencyContact?.name || "Not available"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Relationship:</strong> {profile?.emergencyContact?.relationship || "N/A"}
               </p>
-              <p style={{ color: '#121517' }}>
+              <p style={{ color: 'var(--text)' }}>
                 <strong>Contact Number:</strong> {profile?.emergencyContact?.contactNumber || "N/A"}
               </p>
             </div>
@@ -207,11 +244,18 @@ const PatientProfile: React.FC = () => {
               to="/patient/edit-profile" 
               className="btn border-0"
               style={{ 
-                backgroundColor: 'rgba(70, 130, 180, 0.1)',
-                color: '#4682B4'
+                backgroundColor: 'var(--primary)',
+                color: 'white',
+                fontWeight: 600,
+                borderRadius: '8px',
+                fontSize: '1.1rem',
+                boxShadow: '0 2px 8px rgba(70,130,180,0.08)',
+                letterSpacing: '0.5px',
+                transition: 'all 0.2s',
+                padding: '0.75rem 1.5rem'
               }}
             >
-              Edit Profile
+              <i className="fas fa-edit me-2"></i> Edit Profile
             </Link>
           </div>
         </div>
@@ -223,13 +267,17 @@ const PatientProfile: React.FC = () => {
             style={{ 
               top: "1rem", 
               zIndex: 10,
-              borderRadius: '12px'
+              borderRadius: '16px',
+              minHeight: 320
             }}
           >
             <div className="card-header border-0" style={{ 
-              backgroundColor: '#28a745',
+              backgroundColor: 'var(--accent)',
               color: 'white',
-              borderRadius: '12px 12px 0 0'
+              borderRadius: '16px 16px 0 0',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              letterSpacing: '0.5px'
             }}>
               Appointment History
             </div>
@@ -241,26 +289,20 @@ const PatientProfile: React.FC = () => {
       </div>
 
       {/* Settings Section */}
-      <div className="card border-0 shadow-sm mt-4" style={{ borderRadius: '12px' }}>
+      <div className="card border-0 shadow-sm mt-4" style={{ borderRadius: '16px' }}>
         <div className="card-header border-0" style={{ 
-          backgroundColor: '#121517',
+          backgroundColor: 'var(--text)',
           color: 'white',
-          borderRadius: '12px 12px 0 0'
+          borderRadius: '16px 16px 0 0',
+          fontWeight: 600,
+          fontSize: '1.1rem',
+          letterSpacing: '0.5px'
         }}>
           Settings
         </div>
         <div className="card-body" style={{ backgroundColor: 'white' }}>
-          <p style={{ color: '#6c757d' }}>Update your account preferences and settings.</p>
-          <Link 
-            to="/settings" 
-            className="btn border-0"
-            style={{ 
-              backgroundColor: '#4682B4',
-              color: 'white'
-            }}
-          >
-            Account Settings
-          </Link>
+          {/* Ajoute ici les paramètres du patient si besoin */}
+          <div className="text-muted">Settings and preferences coming soon.</div>
         </div>
       </div>
     </div>
