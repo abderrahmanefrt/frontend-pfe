@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Alert, Button, Form, Spinner } from "react-bootstrap";
-import { format, parseISO, isAfter } from "date-fns";
+import { format, isAfter } from "date-fns";
+import { parseISO } from 'date-fns/parseISO';
+import { Doctor, Availability } from "../types/doctor";
 
 const RescheduleAppointment = () => {
   const { id } = useParams<{ id: string }>();

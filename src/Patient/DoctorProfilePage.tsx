@@ -36,7 +36,7 @@ interface Avis {
 }
 
 // Helper component to wrap icons and potentially fix TS2786 error
-const IconWrapper: React.FC<{ icon: React.ElementType, size?: number, color?: string, className?: string }> = ({ icon: Icon, size, color, className }) => {
+const IconWrapper: React.FC<{ icon: any, size?: number, color?: string, className?: string }> = ({ icon: Icon, size, color, className }) => {
   return <Icon size={size} color={color} className={className} />;
 };
 

@@ -20,9 +20,10 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<User>;
   logout: () => void;
-  updateUser: (updatedUser: User) => void;
+  updateUser: (updatedUser: Partial<User>) => void;
   getAccessToken: () => string;
   loading: boolean;
+  signup: (userData: any) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -115,8 +116,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return user ? user.accessToken : "";
   };
 
+  const signup = async (userData: any): Promise<User> => {
+    // Implementation of signup function
+    // This is a placeholder and should be replaced with the actual implementation
+    throw new Error("Signup function not implemented");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser, getAccessToken, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, getAccessToken, loading, signup }}>
       {children}
     </AuthContext.Provider>
   );

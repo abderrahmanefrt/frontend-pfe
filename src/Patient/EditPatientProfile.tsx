@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 interface EditPatientProfileProps {
   // Rename initialData to initialUser and update the type to User
   initialUser: {
-    id: number; // Assuming User includes id
+    id: string; // Change id type to string to match AuthContext User type
     firstname: string;
     lastname: string;
     email: string;

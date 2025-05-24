@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditPatientProfile from "./EditPatientProfile";
 import { useAuth } from "../context/AuthContext";
@@ -8,7 +8,7 @@ const EditPatientProfileWrapper: React.FC = () => {
   const { user, updateUser, getAccessToken } = useAuth();
   const navigate = useNavigate();
 
-  const handleUpdate = async (updatedUserData: Partial<User>) => {
+  const handleUpdate = async (updatedUserData: Partial<User>): Promise<void> => {
     try {
       const token = getAccessToken();
       if (!token) throw new Error("No access token available");
@@ -86,6 +86,7 @@ const EditPatientProfileWrapper: React.FC = () => {
   return (
     <EditPatientProfile
       initialUser={{
+        id: user.id,
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
