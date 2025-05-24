@@ -2,61 +2,75 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-interface DoctorProfile {
+interface DoctorProfileData {
   id: string;
   firstname: string;
   lastname: string;
   email: string;
-  phone: string;
-  specialite: string;
-  dateOfBirth: string;
-  licenseNumber: string;
+  phone?: string; // Make optional based on previous error
+  specialite?: string; // Make optional based on previous error
+  dateOfBirth?: string;
+  licenseNumber?: string;
   biography?: string;
 }
 
-const DoctorProfileEdit: React.FC = () => {
+// Define props for the DoctorProfileEdit component
+interface DoctorProfileEditProps {
+  doctor?: DoctorProfileData; // Make the doctor prop optional
+  onUpdate?: (updatedDoctor: DoctorProfileData) => void; // Add onUpdate prop
+  onCancel?: () => void; // Add onCancel prop
+}
+
+// Update component signature to accept props
+const DoctorProfileEdit: React.FC<DoctorProfileEditProps> = ({ doctor, onUpdate, onCancel }) => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<DoctorProfile>({
-    id: "",
-    firstname: "",
-    lastname: "",
-    email: "",
-    phone: "",
-    specialite: "",
-    dateOfBirth: "",
-    licenseNumber: "",
-    biography: ""
-  });
+  // Use prop data if available, otherwise initial empty state
+  const [formData, setFormData] = useState<DoctorProfileData>(
+    doctor || {
+      id: "",
+      firstname: "",
+      lastname: "",
+      email: "",
+      phone: "",
+      specialite: "",
+      dateOfBirth: "",
+      licenseNumber: "",
+      biography: ""
+    }
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/me`, {
-          headers: {
-            Authorization: `Bearer ${user?.accessToken}`,
-          },
-        });
+    // Only fetch profile if doctor prop is NOT provided
+    if (!doctor && user?.accessToken) {
+      const fetchProfile = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/me`, {
+            headers: {
+              Authorization: `Bearer ${user?.accessToken}`,
+            },
+          });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile");
+          if (!response.ok) {
+            throw new Error("Failed to fetch profile");
+          }
+
+          const data = await response.json();
+          setFormData(data);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to load profile");
+        } finally {
+          setLoading(false);
         }
-
-        const data = await response.json();
-        setFormData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user?.accessToken) {
+      };
       fetchProfile();
+    } else {
+      // If doctor prop is provided, we are not loading, and if no doctor data, set loading to false
+      setLoading(!doctor);
     }
-  }, [user?.accessToken]);
+  }, [user?.accessToken, doctor]); // Add doctor to dependency array
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -71,11 +85,19 @@ const DoctorProfileEdit: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/medecin/profile`, {
-        method: "PUT",
+      // Determine the API endpoint based on whether a doctor prop was provided
+      const apiUrl = doctor 
+        ? `${import.meta.env.VITE_API_URL}/api/admin/medecins/${formData.id}` // Admin update endpoint (assuming this format)
+        : `${import.meta.env.VITE_API_URL}/api/medecin/profile`; // Doctor self-update endpoint
+      
+      const method = doctor ? "PUT" : "PUT"; // Both seem to be PUT requests
+
+      const response = await fetch(apiUrl, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.accessToken}`,
+          // Use user's token for authentication, both for doctor and admin
+          Authorization: `Bearer ${user?.accessToken}`, 
         },
         body: JSON.stringify(formData),
       });
@@ -86,10 +108,28 @@ const DoctorProfileEdit: React.FC = () => {
       }
 
       const updatedProfile = await response.json();
-      login({ ...user, ...updatedProfile.medecin });
-      navigate("/doctor/dashboard");
+
+      // If doctor prop was provided, call onUpdate. Otherwise, update AuthContext and navigate.
+      if (doctor) {
+        onUpdate?.(updatedProfile); // Assuming updatedProfile has the correct structure
+      } else {
+        // Update AuthContext only for the logged-in doctor's own profile edit
+        login({ ...user, ...updatedProfile.medecin }, false); // Add false as the second argument
+        navigate("/doctor/dashboard");
+      }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile");
+    }
+  };
+
+  // Handle cancel button click
+  const handleCancelClick = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      // Default cancel behavior for doctor's own profile
+      navigate("/doctor/dashboard");
     }
   };
 
@@ -107,7 +147,7 @@ const DoctorProfileEdit: React.FC = () => {
     <div className="container py-5" style={{ backgroundColor: '#f5f7f9' }}>
       <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
         <div className="card-body p-4 p-md-5">
-          <h2 className="mb-4" style={{ color: '#4682B4' }}>Edit Your Profile</h2>
+          <h2 className="mb-4" style={{ color: '#4682B4' }}>{doctor ? "Edit Doctor Profile (Admin)" : "Edit Your Profile"}</h2>
           
           {error && (
             <div className="alert border-0 mb-4" style={{ 
@@ -163,7 +203,7 @@ const DoctorProfileEdit: React.FC = () => {
                   type="tel"
                   className="form-control border-2"
                   name="phone"
-                  value={formData.phone}
+                  value={formData.phone || ""}
                   onChange={handleChange}
                   style={{ borderColor: '#9dbeda' }}
                 />
@@ -175,7 +215,7 @@ const DoctorProfileEdit: React.FC = () => {
                   type="text"
                   className="form-control border-2"
                   name="specialite"
-                  value={formData.specialite}
+                  value={formData.specialite || ""}
                   onChange={handleChange}
                   style={{ borderColor: '#9dbeda' }}
                 />
@@ -187,7 +227,7 @@ const DoctorProfileEdit: React.FC = () => {
                   type="text"
                   className="form-control border-2"
                   name="licenseNumber"
-                  value={formData.licenseNumber}
+                  value={formData.licenseNumber || ""}
                   onChange={handleChange}
                   style={{ borderColor: '#9dbeda' }}
                 />
@@ -199,7 +239,7 @@ const DoctorProfileEdit: React.FC = () => {
                   type="date"
                   className="form-control border-2"
                   name="dateOfBirth"
-                  value={formData.dateOfBirth}
+                  value={formData.dateOfBirth || ""}
                   onChange={handleChange}
                   style={{ borderColor: '#9dbeda' }}
                 />
@@ -221,7 +261,7 @@ const DoctorProfileEdit: React.FC = () => {
                 <button
                   type="button"
                   className="btn border-0"
-                  onClick={() => navigate("/doctor/dashboard")}
+                  onClick={handleCancelClick} // Use the new cancel handler
                   style={{ 
                     backgroundColor: 'rgba(108, 117, 125, 0.1)',
                     color: '#6c757d'

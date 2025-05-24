@@ -41,7 +41,7 @@ const LoginDoctor: React.FC = () => {
         phone: data.phone || "",
         specialite: data.specialite || "",
         accessToken: data.accessToken,
-      });
+      }, false);
 
       navigate("/doctor/dashboard");
     } catch (err: any) {

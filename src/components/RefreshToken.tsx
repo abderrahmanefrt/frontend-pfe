@@ -36,7 +36,7 @@ const RefreshToken: React.FC = () => {
           phone: data.phone ?? "",
           specialite: data.specialite ?? "",
           accessToken: data.accessToken, // Nouvel access token reçu
-        });
+        }, false);
       } catch (err: any) {
         console.error("Erreur de rafraîchissement:", err.message);
         setError("Impossible de rafraîchir le token"); // Afficher l'erreur dans le UI

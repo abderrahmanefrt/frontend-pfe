@@ -5,9 +5,9 @@ interface DoctorDetails {
   id: string;
   firstname: string;
   lastname: string;
-  specialite: string;
+  specialite?: string;
   email: string;
-  phone: string;
+  phone?: string;
   dateOfBirth?: string;
   licenseNumber?: string;
   address?: string;

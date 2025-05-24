@@ -4,13 +4,13 @@ import DoctorSchedule from "./DoctorSchedule";
 import AppointmentRequests from "./AppointmentRequests";
 import DoctorProfile from "./DoctorProfile";
 import RefreshToken from "../components/RefreshToken";
-import { useNavigate, Link } from "react-router-dom"; // ✅ Import de Link
+import { useNavigate, Link } from "react-router-dom";
 
 const DoctorDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, updateUser } = useAuth();
 
   useEffect(() => {
     if (!user) {
@@ -34,7 +34,8 @@ const DoctorDashboard: React.FC = () => {
 
         // ✅ Empêche boucle infinie
         if (user && data.id !== user.id) {
-          login({ ...user, ...data }, false);
+          // Use updateUser instead of login to update the user object in context
+          updateUser({ ...user, ...data });
         }
       } catch (err) {
         console.error("Error fetching doctor profile:", err);
@@ -147,31 +148,28 @@ const DoctorDashboard: React.FC = () => {
 
         {/* Link to Accepted Appointments */}
         {/* Accepted Appointments Link Card */}
-{/* Accepted Appointments Link Card */}
-<div className="col-12">
-  <div className="card border-0 shadow-sm" style={{ borderRadius: '12px', backgroundColor: 'white' }}>
-    <div className="card-body d-flex justify-content-center">
-      <Link
-        to="/doctor/accepted-appointments"
-        className="btn"
-        style={{
-          backgroundColor: 'var(--primary)',
-          color: 'white',
-          fontWeight: 'bold',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-          textDecoration: 'none'
-        }}
-      >
-        <i className="bi bi-check-circle-fill me-2"></i>
-        View Accepted Appointments
-      </Link>
-    </div>
-  </div>
-</div>
-
-
+        <div className="col-12">
+          <div className="card border-0 shadow-sm" style={{ borderRadius: '12px', backgroundColor: 'white' }}>
+            <div className="card-body d-flex justify-content-center">
+              <Link
+                to="/doctor/accepted-appointments"
+                className="btn"
+                style={{
+                  backgroundColor: 'var(--primary)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                  textDecoration: 'none'
+                }}
+              >
+                <i className="bi bi-check-circle-fill me-2"></i>
+                View Accepted Appointments
+              </Link>
+            </div>
+          </div>
+        </div>
 
         {/* Profile Card */}
         <div className="col-12">
@@ -187,4 +185,4 @@ const DoctorDashboard: React.FC = () => {
   );
 };
 
-export default DoctorDashboard;
+export default DoctorDashboard; 
