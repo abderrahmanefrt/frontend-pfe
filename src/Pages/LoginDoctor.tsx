@@ -8,7 +8,7 @@ const LoginDoctor: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { updateUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +32,7 @@ const LoginDoctor: React.FC = () => {
       }
 
       const data = await response.json();
-      login({
+      updateUser({
         id: data.id,
         role: data.role,
         firstname: data.firstname,
@@ -41,7 +41,8 @@ const LoginDoctor: React.FC = () => {
         phone: data.phone || "",
         specialite: data.specialite || "",
         accessToken: data.accessToken,
-      }, false);
+        refreshToken: data.refreshToken || "",
+      });
 
       navigate("/doctor/dashboard");
     } catch (err: any) {

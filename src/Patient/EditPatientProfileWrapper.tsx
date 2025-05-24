@@ -85,7 +85,7 @@ const EditPatientProfileWrapper: React.FC = () => {
 
   return (
     <EditPatientProfile
-      initialData={{
+      initialUser={{
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,

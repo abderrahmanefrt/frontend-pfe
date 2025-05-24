@@ -73,9 +73,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items, onLogout, onNavigate }) 
                 transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
                 fontWeight: isActive ? "600" : "500",
                 textDecoration: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(var(--primary-rgb), 0.05)"
-                }
+              
               }}
             >
               <FontAwesomeIcon 
@@ -91,17 +89,14 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items, onLogout, onNavigate }) 
       <div className="mt-auto pt-3">
         <button 
           onClick={onLogout} 
-          className="btn w-100 d-flex align-items-center justify-content-center"
+          className="btn w-100 d-flex align-items-center justify-content-center logout-btn"
           style={{
             padding: "0.75rem 1rem",
             borderRadius: "8px",
             transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
             backgroundColor: "transparent",
             color: "var(--accent)",
-            border: "1px solid var(--accent)",
-            "&:hover": {
-              backgroundColor: "rgba(var(--accent-rgb), 0.1)"
-            }
+            border: "1px solid var(--accent)"
           }}
         >
           <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
@@ -123,6 +118,9 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items, onLogout, onNavigate }) 
           .side-navbar.open {
             transform: translateX(0);
           }
+        }
+        .logout-btn:hover {
+          background-color: rgba(var(--accent-rgb), 0.1) !important;
         }
       `}</style>
     </div>

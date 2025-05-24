@@ -23,7 +23,7 @@ interface DoctorProfileEditProps {
 
 // Update component signature to accept props
 const DoctorProfileEdit: React.FC<DoctorProfileEditProps> = ({ doctor, onUpdate, onCancel }) => {
-  const { user, login } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   // Use prop data if available, otherwise initial empty state
   const [formData, setFormData] = useState<DoctorProfileData>(
@@ -114,7 +114,7 @@ const DoctorProfileEdit: React.FC<DoctorProfileEditProps> = ({ doctor, onUpdate,
         onUpdate?.(updatedProfile); // Assuming updatedProfile has the correct structure
       } else {
         // Update AuthContext only for the logged-in doctor's own profile edit
-        login({ ...user, ...updatedProfile.medecin }, false); // Add false as the second argument
+        updateUser({ ...user, ...updatedProfile.medecin });
         navigate("/doctor/dashboard");
       }
 

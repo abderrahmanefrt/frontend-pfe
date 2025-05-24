@@ -4,17 +4,40 @@ import EditPatientProfile from "../Patient/EditPatientProfile";
 
 export interface User {
   id: number;
-  name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   phone: string;
+  dateOfBirth: string;
 }
 
 // Simulate a function to fetch a user by ID
 const fetchUserById = (id: number): Promise<User> => {
   const dummyUsers: User[] = [
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", phone: "555-1234" },
-    { id: 2, name: "Bob Smith", email: "bob@example.com", phone: "555-5678" },
-    { id: 3, name: "Charlie Brown", email: "charlie@example.com", phone: "555-9012" },
+    { 
+      id: 1, 
+      firstname: "Alice", 
+      lastname: "Johnson", 
+      email: "alice@example.com", 
+      phone: "555-1234",
+      dateOfBirth: "1990-01-01"
+    },
+    { 
+      id: 2, 
+      firstname: "Bob", 
+      lastname: "Smith", 
+      email: "bob@example.com", 
+      phone: "555-5678",
+      dateOfBirth: "1991-02-02"
+    },
+    { 
+      id: 3, 
+      firstname: "Charlie", 
+      lastname: "Brown", 
+      email: "charlie@example.com", 
+      phone: "555-9012",
+      dateOfBirth: "1992-03-03"
+    },
   ];
   return new Promise((resolve) => {
     setTimeout(() => {

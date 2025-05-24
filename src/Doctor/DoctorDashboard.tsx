@@ -3,14 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import DoctorSchedule from "./DoctorSchedule";
 import AppointmentRequests from "./AppointmentRequests";
 import DoctorProfile from "./DoctorProfile";
-import RefreshToken from "../components/RefreshToken";
 import { useNavigate, Link } from "react-router-dom"; // ✅ Import de Link
 
 const DoctorDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user, login, logout } = useAuth();
+  const { user, updateUser, logout } = useAuth();
 
   useEffect(() => {
     if (!user) {
@@ -34,7 +33,7 @@ const DoctorDashboard: React.FC = () => {
 
         // ✅ Empêche boucle infinie
         if (user && data.id !== user.id) {
-          login({ ...user, ...data }, false);
+          updateUser({ ...user, ...data });
         }
       } catch (err) {
         console.error("Error fetching doctor profile:", err);
@@ -75,8 +74,6 @@ const DoctorDashboard: React.FC = () => {
 
   return (
     <div className="container-fluid py-4" style={{ backgroundColor: 'var(--background)' }}>
-      <RefreshToken />
-
       {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4 px-4 py-3 rounded-3 shadow-sm"
            style={{ backgroundColor: 'white' }}>

@@ -13,6 +13,7 @@ export interface User {
   biography?: string;
   accessToken: string;
   refreshToken: string;
+  dateOfBirth?: string;
 }
 
 interface AuthContextType {
@@ -68,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         biography: user.biography,
         accessToken: user.accessToken,
         refreshToken: user.refreshToken,
+        dateOfBirth: user.dateOfBirth,
       };
   
       setUser(loggedInUser);
@@ -101,10 +103,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     navigate("/");
   };
 
-  const updateUser = (updatedUser: User) => {
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    sessionStorage.setItem("user", JSON.stringify(updatedUser));
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prevUser => {
+      const newUser = { ...(prevUser || {}), ...userData } as User;
+      localStorage.setItem('user', JSON.stringify(newUser));
+      return newUser;
+    });
   };
 
   const getAccessToken = () => {
