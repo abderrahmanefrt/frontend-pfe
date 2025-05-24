@@ -98,7 +98,7 @@ const DoctorProfilePage: React.FC = () => {
         
         if (!response.ok) throw new Error("Erreur lors du chargement des avis");
         const data = await response.json();
-        setAvisList(data);
+        setAvisList(data.filter((avis: any) => avis.status === "approved"));
       } catch (error: any) {
         console.error(error.message);
         setError("Failed to load reviews");

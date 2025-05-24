@@ -23,6 +23,7 @@ const DoctorReview = ({ medecinId }: { medecinId: number }) => {
           medecinId,
           note: rating,
           commentaire: comment,
+          status: "pending"
         }),
       });
 
@@ -32,7 +33,7 @@ const DoctorReview = ({ medecinId }: { medecinId: number }) => {
         throw new Error(data.message || "Failed to submit review");
       }
 
-      alert("Review submitted successfully!");
+      alert("Your review has been submitted and is pending approval.");
     } catch (error: any) {
       alert(error.message || "An error occurred");
     }
