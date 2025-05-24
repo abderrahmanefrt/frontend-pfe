@@ -35,6 +35,11 @@ interface Avis {
   };
 }
 
+// Helper component to wrap icons and potentially fix TS2786 error
+const IconWrapper: React.FC<{ icon: React.ElementType, size?: number, color?: string, className?: string }> = ({ icon: Icon, size, color, className }) => {
+  return <Icon size={size} color={color} className={className} />;
+};
+
 const DoctorProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -162,7 +167,8 @@ const DoctorProfilePage: React.FC = () => {
                   className="rounded-circle bg-primary d-flex align-items-center justify-content-center"
                   style={{ width: "150px", height: "150px" }}
                 >
-                  <FaUserMd size={60} color="white" />
+                  {/* Use IconWrapper for FaUserMd */}
+                  <IconWrapper icon={FaUserMd} size={60} color="white" />
                 </div>
               )}
             </div>
@@ -190,15 +196,18 @@ const DoctorProfilePage: React.FC = () => {
               <h4 className="text-dark">Contact Information</h4>
               <ListGroup variant="flush" className="mb-4">
                 <ListGroup.Item>
-                  <FaEnvelope className="me-2" />
+                  {/* Use IconWrapper for FaEnvelope */}
+                  <IconWrapper icon={FaEnvelope} className="me-2" />
                   <span className="text-muted">{doctor.email}</span>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <FaPhone className="me-2" />
+                  {/* Use IconWrapper for FaPhone */}
+                  <IconWrapper icon={FaPhone} className="me-2" />
                   <span className="text-muted">{doctor.phone}</span>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <FaMapMarkerAlt className="me-2" />
+                  {/* Use IconWrapper for FaMapMarkerAlt */}
+                  <IconWrapper icon={FaMapMarkerAlt} className="me-2" />
                   <span className="text-muted">{doctor.address}</span>
                 </ListGroup.Item>
                 <ListGroup.Item>

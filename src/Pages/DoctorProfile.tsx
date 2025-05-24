@@ -155,7 +155,7 @@ const DoctorProfile: React.FC = () => {
               </p>
               {doctor.averageRating && (
                 <div className="mt-2">
-                  <StarRating rating={doctor.averageRating} />
+                  <StarRating value={doctor.averageRating} />
                 </div>
               )}
             </div>
