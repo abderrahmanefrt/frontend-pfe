@@ -1,25 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+// Assuming the User interface is defined elsewhere and imported, or define it here if not
+// import { User } from "./types"; // Example import path
 
 interface EditPatientProfileProps {
-  initialData: {
+  // Rename initialData to initialUser and update the type to User
+  initialUser: {
+    id: number; // Assuming User includes id
     firstname: string;
     lastname: string;
     email: string;
     phone: string;
-    dateOfBirth: string;
+    dateOfBirth: string; // Assuming dateOfBirth is a string (e.g., "YYYY-MM-DD")
+    // Add other User properties if needed by the form
   };
   onUpdate: (updatedUserData: any) => void;
   onCancel: () => void;
 }
 
 const EditPatientProfile: React.FC<EditPatientProfileProps> = ({
-  initialData,
+  initialUser,
   onUpdate,
   onCancel
 }) => {
-  const [formData, setFormData] = useState(initialData);
+  // Initialize state with initialUser
+  const [formData, setFormData] = useState(initialUser);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { getAccessToken, logout } = useAuth();
