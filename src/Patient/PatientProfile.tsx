@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import AppointmentHistory from "./AppointmentHistory";
 import Spinner from "react-bootstrap/Spinner";
+import { format } from "date-fns";
 
 const refreshAccessToken = async () => {
   const storedUser = localStorage.getItem("user");
@@ -34,7 +35,7 @@ const refreshAccessToken = async () => {
 };
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  const storedUser = localStorage.getItem("user");
+  const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
   if (!storedUser) throw new Error("Token not found");
 
   const user = JSON.parse(storedUser);
@@ -65,12 +66,36 @@ const PatientProfile: React.FC = () => {
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Infos médicales locales
+  const [medicalInfo, setMedicalInfo] = useState({
+    medicalHistory: "",
+    allergies: "",
+    medications: "",
+    primaryCarePhysician: "",
+    chifaCardNumber: "",
+    emergencyContact: {
+      name: "",
+      relationship: "",
+      contactNumber: ""
+    }
+  });
+  const [editMedical, setEditMedical] = useState(false);
+
+  // Charger les infos médicales du localStorage
+  useEffect(() => {
+    if (user?.id) {
+      const saved = localStorage.getItem(`patient_medical_info_${user.id}`);
+      if (saved) setMedicalInfo(JSON.parse(saved));
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/api/users/me`);
         const data = await response.json();
         setProfile(data);
+        console.log('profile', data);
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
@@ -91,6 +116,14 @@ const PatientProfile: React.FC = () => {
 
   // Avatar initials
   const initials = (profile?.firstname?.[0] || "P") + (profile?.lastname?.[0] || "");
+
+  // Sauvegarder dans le localStorage
+  const saveMedicalInfo = () => {
+    if (user?.id) {
+      localStorage.setItem(`patient_medical_info_${user.id}`, JSON.stringify(medicalInfo));
+      setEditMedical(false);
+    }
+  };
 
   return (
     <div className="container py-4" style={{ backgroundColor: 'var(--background)' }}>
@@ -153,7 +186,7 @@ const PatientProfile: React.FC = () => {
                 <strong>Name:</strong> {profile?.firstname} {profile?.lastname || "Guest"}
               </p>
               <p style={{ color: 'var(--text)' }}>
-                <strong>Date of Birth:</strong> {profile?.dateOfBirth || "N/A"}
+                <strong>Date of Birth:</strong> {profile?.dateOfBirth ? format(new Date(profile.dateOfBirth), "dd/MM/yyyy") : "N/A"}
               </p>
               <p style={{ color: 'var(--text)' }}>
                 <strong>Gender:</strong> {profile?.gender || "N/A"}
@@ -197,21 +230,41 @@ const PatientProfile: React.FC = () => {
               Medical & Insurance
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Medical History:</strong> {profile?.medicalHistory || "No details"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Allergies:</strong> {profile?.allergies || "None"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Medications:</strong> {profile?.medications || "None"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Primary Care Physician:</strong> {profile?.primaryCarePhysician || "Not assigned"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Chifa Card Number:</strong> {profile?.chifaCardNumber || "Not provided"}
-              </p>
+              {editMedical ? (
+                <>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Medical History</label>
+                    <input className="form-control" value={medicalInfo.medicalHistory} onChange={e => setMedicalInfo({ ...medicalInfo, medicalHistory: e.target.value })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Allergies</label>
+                    <input className="form-control" value={medicalInfo.allergies} onChange={e => setMedicalInfo({ ...medicalInfo, allergies: e.target.value })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Medications</label>
+                    <input className="form-control" value={medicalInfo.medications} onChange={e => setMedicalInfo({ ...medicalInfo, medications: e.target.value })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Primary Care Physician</label>
+                    <input className="form-control" value={medicalInfo.primaryCarePhysician} onChange={e => setMedicalInfo({ ...medicalInfo, primaryCarePhysician: e.target.value })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Chifa Card Number</label>
+                    <input className="form-control" value={medicalInfo.chifaCardNumber} onChange={e => setMedicalInfo({ ...medicalInfo, chifaCardNumber: e.target.value })} />
+                  </div>
+                  <button className="btn btn-primary mt-2 me-2" onClick={saveMedicalInfo}>Save</button>
+                  <button className="btn btn-secondary mt-2" onClick={() => setEditMedical(false)}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <p style={{ color: 'var(--text)' }}><strong>Medical History:</strong> {medicalInfo.medicalHistory || "No details"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Allergies:</strong> {medicalInfo.allergies || "None"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Medications:</strong> {medicalInfo.medications || "None"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Primary Care Physician:</strong> {medicalInfo.primaryCarePhysician || "Not assigned"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Chifa Card Number:</strong> {medicalInfo.chifaCardNumber || "Not provided"}</p>
+                  <button className="btn btn-outline-primary btn-sm mt-2" onClick={() => setEditMedical(true)}>Edit</button>
+                </>
+              )}
             </div>
           </div>
 
@@ -227,15 +280,28 @@ const PatientProfile: React.FC = () => {
               Emergency Contact
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Name:</strong> {profile?.emergencyContact?.name || "Not available"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Relationship:</strong> {profile?.emergencyContact?.relationship || "N/A"}
-              </p>
-              <p style={{ color: 'var(--text)' }}>
-                <strong>Contact Number:</strong> {profile?.emergencyContact?.contactNumber || "N/A"}
-              </p>
+              {editMedical ? (
+                <>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Name</label>
+                    <input className="form-control" value={medicalInfo.emergencyContact.name} onChange={e => setMedicalInfo({ ...medicalInfo, emergencyContact: { ...medicalInfo.emergencyContact, name: e.target.value } })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Relationship</label>
+                    <input className="form-control" value={medicalInfo.emergencyContact.relationship} onChange={e => setMedicalInfo({ ...medicalInfo, emergencyContact: { ...medicalInfo.emergencyContact, relationship: e.target.value } })} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label fw-bold">Contact Number</label>
+                    <input className="form-control" value={medicalInfo.emergencyContact.contactNumber} onChange={e => setMedicalInfo({ ...medicalInfo, emergencyContact: { ...medicalInfo.emergencyContact, contactNumber: e.target.value } })} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p style={{ color: 'var(--text)' }}><strong>Name:</strong> {medicalInfo.emergencyContact.name || "Not available"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Relationship:</strong> {medicalInfo.emergencyContact.relationship || "N/A"}</p>
+                  <p style={{ color: 'var(--text)' }}><strong>Contact Number:</strong> {medicalInfo.emergencyContact.contactNumber || "N/A"}</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -282,7 +348,7 @@ const PatientProfile: React.FC = () => {
               Appointment History
             </div>
             <div className="card-body" style={{ backgroundColor: 'white' }}>
-              <AppointmentHistory />
+              <AppointmentHistory showBackButton={false} />
             </div>
           </div>
         </div>

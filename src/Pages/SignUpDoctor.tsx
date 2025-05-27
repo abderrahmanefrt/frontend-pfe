@@ -57,8 +57,17 @@ const SignUpDoctor: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Doctor registered successfully! Awaiting approval.");
-        navigate("/login");
+        // Save doctor info to sessionStorage for OTP verification page
+        const doctorDataToStore = {
+          userId: data.medecin.id,
+          email: data.medecin.email,
+          role: data.medecin.role
+        };
+        console.log('Saving to sessionStorage (Doctor):', doctorDataToStore);
+        sessionStorage.setItem('verificationInfo', JSON.stringify(doctorDataToStore));
+
+        // Redirect to OTP verification page
+        navigate('/verify-otp', { replace: true }); // Navigate without state
       } else {
         alert(data.message || "Registration failed.");
       }

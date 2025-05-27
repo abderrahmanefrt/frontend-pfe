@@ -12,6 +12,8 @@ import SignUpPatient from "../Pages/SignUpPatient";
 import SignUpDoctor from "../Pages/SignUpDoctor";
 import DoctorProfiles from "../Pages/DoctorProfile";
 import AppointmentPage from "../components/AppointmentPage ";
+import OTPVerificationPage from '../Pages/OTPVerificationPage'; 
+
 // Patient routes
 import Dashboard from "../Patient/Dashboard";
 import PatientProfile from "../Patient/PatientProfile";
@@ -146,6 +148,8 @@ function AppRoutes() {
           />
         }
       />
+            <Route path="/verify-otp" element={<OTPVerificationPage />} />
+
       <Route
         path="/doctor/ChangePassword"
         element={

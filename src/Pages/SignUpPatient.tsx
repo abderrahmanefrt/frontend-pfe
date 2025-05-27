@@ -55,8 +55,17 @@ const SignUpPatient: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Patient sign-up successful!");
-        navigate("/dashboard");
+        // Save user info to sessionStorage for OTP verification page
+        const userDataToStore = {
+          userId: data.user.id,
+          email: data.user.email,
+          role: data.user.role
+        };
+        console.log('Saving to sessionStorage (Patient):', userDataToStore); // Log data being saved
+        sessionStorage.setItem('verificationInfo', JSON.stringify(userDataToStore));
+        
+        // Redirect to OTP verification page
+        navigate('/verify-otp', { replace: true }); // Navigate without state
       } else {
         alert(data.message || "Erreur lors de l'inscription");
       }

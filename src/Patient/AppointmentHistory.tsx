@@ -15,7 +15,11 @@ interface Appointment {
   };
 }
 
-const AppointmentHistory = () => {
+interface AppointmentHistoryProps {
+  showBackButton?: boolean;
+}
+
+const AppointmentHistory: React.FC<AppointmentHistoryProps> = ({ showBackButton = true }) => {
   const { getAccessToken, logout } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -127,20 +131,22 @@ const AppointmentHistory = () => {
   if (error) {
     return (
       <div className="container py-4">
-        <Button 
-  onClick={() => navigate('/dashboard')}  // Changé ici
-  className="mb-4"
-  style={{
-    backgroundColor: 'var(--secondary)',
-    color: 'var(--text)',
-    border: '1px solid var(--primary)',
-    padding: '0.5rem 1.5rem',
-    borderRadius: '0.375rem',
-    fontWeight: '500'
-  }}
->
-  <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
-</Button>
+        {showBackButton && (
+          <Button 
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+            style={{
+              backgroundColor: 'var(--secondary)',
+              color: 'var(--text)',
+              border: '1px solid var(--primary)',
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              fontWeight: '500'
+            }}
+          >
+            <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
+          </Button>
+        )}
         <Alert variant="danger" className="border-0 shadow-sm" style={{ 
           backgroundColor: 'rgba(220, 53, 69, 0.1)',
           borderLeft: '4px solid var(--accent)',
@@ -157,19 +163,21 @@ const AppointmentHistory = () => {
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 style={{ color: 'var(--text)' }}>Appointment History</h1>
-        <Button 
-  onClick={() => navigate('/dashboard')}  // Changé ici
-  style={{
-    backgroundColor: 'var(--secondary)',
-    color: 'var(--text)',
-    border: '1px solid var(--primary)',
-    padding: '0.5rem 1.5rem',
-    borderRadius: '0.375rem',
-    fontWeight: '500'
-  }}
->
-  <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
-</Button>
+        {showBackButton && (
+          <Button 
+            onClick={() => navigate('/dashboard')}
+            style={{
+              backgroundColor: 'var(--secondary)',
+              color: 'var(--text)',
+              border: '1px solid var(--primary)',
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              fontWeight: '500'
+            }}
+          >
+            <i className="fas fa-arrow-left me-2"></i> Back to Dashboard
+          </Button>
+        )}
       </div>
 
       {appointments.length === 0 ? (

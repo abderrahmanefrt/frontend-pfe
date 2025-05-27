@@ -52,8 +52,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
   
       if (!response.ok) {
-        console.log('Response not OK:', response.statusText);  // Log response
-        throw new Error("Login failed");
+        const errorData = await response.json();
+        console.log('Login error response:', errorData);  // Log the error response
+        throw new Error(errorData.message || "Login failed");
       }
   
       const user = await response.json();
@@ -92,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return loggedInUser;
     } catch (error) {
       console.error("Login error:", error);  // Log the error
-      throw new Error("Login failed");
+      throw error;  // Re-throw the error to be handled by the component
     }
   };
   

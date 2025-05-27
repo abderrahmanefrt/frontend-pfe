@@ -96,37 +96,6 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
                 }}></span>
               </Link>
             </li>
-
-            {/* Enhanced Dropdown */}
-            <li className="nav-item dropdown mx-1">
-              <a className="nav-link dropdown-toggle px-3 py-2 d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i className="bi bi-three-dots-vertical me-1 d-lg-none"></i>
-                More
-              </a>
-              <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                border: '1px solid rgba(0, 0, 0, 0.05)'
-              }}>
-                <li>
-                  <Link className="dropdown-item py-2 px-3 d-flex align-items-center" to="/privacy">
-                    <i className="bi bi-shield-lock me-2"></i>Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item py-2 px-3 d-flex align-items-center" to="/terms">
-                    <i className="bi bi-file-text me-2"></i>Terms of Use
-                  </Link>
-                </li>
-                <li><hr className="dropdown-divider my-1" /></li>
-                <li>
-                  <Link className="dropdown-item py-2 px-3 d-flex align-items-center" to="/faq">
-                    <i className="bi bi-question-circle me-2"></i>FAQ
-                  </Link>
-                </li>
-              </ul>
-            </li>
           </ul>
         </div>
       </div>
