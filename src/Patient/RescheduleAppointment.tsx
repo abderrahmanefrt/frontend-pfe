@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Alert, Button, Spinner } from "react-bootstrap";
-import { format, isAfter, parseISO } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { FaClock, FaCheckCircle } from "react-icons/fa";
 
 interface Availability {
@@ -114,9 +114,7 @@ const RescheduleAppointment = () => {
         console.log('Availabilities data received:', availabilities);
 
         const validAvailabilities = availabilities.filter((avail: Availability) => {
-          console.log('Processing availability:', avail);
-          const parsedDate = parseISO(avail.date);
-          console.log('Parsed date:', parsedDate, 'isValid:', !isNaN(parsedDate.getTime()), 'isAfterToday:', isAfter(parsedDate, new Date()));
+          const parsedDate = new Date(avail.date);
           return !isNaN(parsedDate.getTime()) && isAfter(parsedDate, new Date());
         });
 
@@ -230,7 +228,7 @@ const RescheduleAppointment = () => {
           )}
           {success && (
             <Alert variant="success" className="alert-dismissible fade show d-flex align-items-center gap-2">
-              <FaCheckCircle className="me-2 text-success" />
+              {FaCheckCircle({ className: "me-2 text-success" })}
               {success}
               <button type="button" className="btn-close" onClick={() => setSuccess("")}></button>
             </Alert>
@@ -261,7 +259,7 @@ const RescheduleAppointment = () => {
                 <div className="d-flex flex-wrap gap-3">
                   {availabilities.length === 0 && <span className="text-muted">No slots available.</span>}
                   {availabilities.map((avail) => {
-                    const parsedDate = parseISO(avail.date);
+                    const parsedDate = new Date(avail.date);
                     const slotLabel = `${format(parsedDate, "EEEE, MMM d")} | ${avail.startTime} - ${avail.endTime}`;
                     const isSelected = formData.availabilityId === avail.id;
                     return (
@@ -280,9 +278,9 @@ const RescheduleAppointment = () => {
                         }}
                         onClick={() => handleSlotSelect(avail.id, avail.startTime)}
                       >
-                        <FaClock className="me-2" />
+                        {FaClock({ className: "me-2" })}
                         {slotLabel}
-                        {isSelected && <FaCheckCircle className="ms-2 text-success" />}
+                        {isSelected && FaCheckCircle({ className: "ms-2 text-success" })}
                       </button>
                     );
                   })}
