@@ -29,7 +29,9 @@ const About: React.FC = () => {
       
       <h2>Contact Us</h2>
       <p>
-        For more information or support, please contact us at <a href="mailto:info@healthappointments.com">info@healthappointments.com</a>.
+        For more information or support, please contact us at <a href="mailto:indoctor8@gmail.com">indoctor8@gmail.com
+
+</a>.
       </p>
     </div>
   );

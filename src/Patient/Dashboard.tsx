@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
   const initials = (user?.lastname?.[0] || "P") + (user?.firstname?.[0] || "");
 
   return (
-    <div className="container-fluid" style={{ background: "var(--background)", minHeight: "100vh" }}>
+    <div className="container-fluid px-0" style={{ background: "var(--background)", minHeight: "100vh" }}>
       {/* Mobile Menu Button */}
       <button 
         className="btn d-md-none position-fixed top-0 end-0 m-3 z-3"
@@ -90,44 +90,62 @@ const Dashboard: React.FC = () => {
         <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
       </button>
 
-      <div className="row">
-        {/* Sidebar */}
-        <div 
-          className={`col-md-3 col-lg-2 p-0 d-md-block ${isMenuOpen ? 'd-block' : 'd-none'} `}
+      <div className="row flex-nowrap">
+        {/* Sidebar mobile */}
+        {isMenuOpen && (
+          <div
+            className="d-block d-md-none"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              height: '100vh',
+              zIndex: 1040,
+              backgroundColor: 'white',
+              width: '280px',
+              transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
+              boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+              padding: 0
+            }}
+          >
+            <div className="h-100 side-navbar open">
+              <SideNavbar items={navItems} onLogout={handleLogout} onNavigate={() => setIsMenuOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* Sidebar desktop */}
+        <div
+          className="col-md-3 col-lg-2 p-0 d-none d-md-block"
           style={{
-            position: isMenuOpen ? 'fixed' : 'static',
-            top: 0,
-            left: 0,
-            height: '100vh',
-            zIndex: 1040,
+            minHeight: '100vh',
             backgroundColor: 'white',
-            width: isMenuOpen ? '280px' : 'auto',
-            transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
-            boxShadow: isMenuOpen ? '2px 0 8px rgba(0,0,0,0.1)' : 'none',
+            boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
             padding: 0
           }}
         >
-          <div className={`h-100 side-navbar${isMenuOpen ? ' open' : ''}`}>
+          <div className="h-100 side-navbar">
             <SideNavbar items={navItems} onLogout={handleLogout} onNavigate={() => setIsMenuOpen(false)} />
           </div>
         </div>
 
         {/* Main Content */}
         <div 
-          className={`col-12 col-md-9 col-lg-10 p-4 text-dark ${isMenuOpen ? 'ms-0' : ''}`}
+          className={`col-12 col-md-9 col-lg-10 p-3 p-md-4 text-dark ${isMenuOpen ? 'ms-0' : ''}`}
           style={{
             transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
-            marginLeft: isMenuOpen ? '280px' : '0'
+            marginLeft: isMenuOpen ? '280px' : '0',
+            minHeight: '100vh'
           }}
         >
           {/* Header avec avatar */}
-          <div className="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3">
-            <div className="d-flex align-items-center gap-3">
+          <div className="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3 text-center text-md-start">
+            <div className="d-flex align-items-center gap-3 mx-auto mx-md-0">
               <div className="rounded-circle d-flex justify-content-center align-items-center shadow"
                 style={{
-                  width: 64,
-                  height: 64,
-                  fontSize: '1.7rem',
+                  width: 56,
+                  height: 56,
+                  fontSize: '1.3rem',
                   background: 'var(--primary)',
                   color: 'white',
                   fontWeight: 700,
@@ -138,13 +156,12 @@ const Dashboard: React.FC = () => {
                 {initials}
               </div>
               <div>
-                <h2 className="mb-1" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '1.5rem' }}>
+                <h2 className="mb-1" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '1.1rem' }}>
                   Hello, {user?.lastname || "Guest"}!
                 </h2>
                 <small className="text-muted">You have {upcomingCount} upcoming appointments.</small>
               </div>
             </div>
-
           </div>
 
           {/* Health Tip */}
@@ -158,7 +175,7 @@ const Dashboard: React.FC = () => {
             }}
           >
             <h5 style={{ color: 'var(--primary)', fontWeight: 600 }}>Health Tip</h5>
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
               <button className="btn btn-sm btn-outline-secondary" onClick={prevTip}>‹</button>
               <p className="mx-3 flex-grow-1 text-center mb-0" style={{ color: 'var(--text)' }}>{tips[tipIndex]}</p>
               <button className="btn btn-sm btn-outline-secondary" onClick={nextTip}>›</button>
@@ -235,6 +252,34 @@ const Dashboard: React.FC = () => {
           onClick={() => setIsMenuOpen(false)}
         />
       )}
+      <style>{`
+        @media (max-width: 767.98px) {
+          .side-navbar {
+            position: fixed !important;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1040;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.12);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+          }
+          .side-navbar.open {
+            transform: translateX(0);
+          }
+          .card {
+            margin-bottom: 1.5rem !important;
+          }
+          .btn, .btn-sm {
+            font-size: 1rem !important;
+          }
+          .rounded-circle {
+            width: 48px !important;
+            height: 48px !important;
+            font-size: 1rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

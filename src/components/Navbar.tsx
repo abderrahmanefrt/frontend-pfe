@@ -14,11 +14,12 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
       WebkitBackdropFilter: 'blur(8px)',
       boxShadow: '0 2px 20px rgba(0,0,0,0.1)',
       borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-      padding: '0.5rem 0'
+      padding: '0.5rem 0',
+      zIndex: 1050
     }}>
       <div className="container">
         {/* Brand with enhanced styling */}
-        <Link className="navbar-brand fw-bold d-flex align-items-center" to="/" style={{
+        <Link className="navbar-brand fw-bold d-flex align-items-center mx-auto mx-lg-0" to="/" style={{
           fontSize: '1.5rem',
           letterSpacing: '0.5px'
         }}>
@@ -28,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
 
         {/* Mobile Toggle */}
         <button
-          className="navbar-toggler border-0 py-2"
+          className="navbar-toggler border-0 py-2 ms-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -41,64 +42,77 @@ const Navbar: React.FC<NavbarProps> = ({ brand }) => {
 
         {/* Navigation Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center text-center text-lg-start w-100 justify-content-center justify-content-lg-end gap-2 gap-lg-0">
             <li className="nav-item mx-1">
               <Link className="nav-link px-3 py-2 position-relative" to="/" style={{
                 fontWeight: '500',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                fontSize: '1.1rem'
               }}>
                 <i className="bi bi-house-door me-1 d-lg-none"></i>
                 Home
-                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ 
-                  width: '0', 
-                  height: '2px', 
-                  transition: 'width 0.3s', 
-                  backgroundColor: '#f5f7f9' 
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{
+                  width: '0',
+                  height: '2px',
+                  transition: 'width 0.3s',
+                  backgroundColor: '#f5f7f9'
                 }}></span>
               </Link>
             </li>
-
             <li className="nav-item mx-1">
-              <Link className="nav-link px-3 py-2 position-relative" to="/login">
+              <Link className="nav-link px-3 py-2 position-relative" to="/login" style={{ fontSize: '1.1rem' }}>
                 <i className="bi bi-box-arrow-in-right me-1 d-lg-none"></i>
                 Login
-                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ 
-                  width: '0', 
-                  height: '2px', 
-                  transition: 'width 0.3s', 
-                  backgroundColor: '#f5f7f9' 
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{
+                  width: '0',
+                  height: '2px',
+                  transition: 'width 0.3s',
+                  backgroundColor: '#f5f7f9'
                 }}></span>
               </Link>
             </li>
-
             <li className="nav-item mx-1">
-              <Link className="nav-link px-3 py-2 position-relative" to="/about">
+              <Link className="nav-link px-3 py-2 position-relative" to="/about" style={{ fontSize: '1.1rem' }}>
                 <i className="bi bi-info-circle me-1 d-lg-none"></i>
                 About
-                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ 
-                  width: '0', 
-                  height: '2px', 
-                  transition: 'width 0.3s', 
-                  backgroundColor: '#f5f7f9' 
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{
+                  width: '0',
+                  height: '2px',
+                  transition: 'width 0.3s',
+                  backgroundColor: '#f5f7f9'
                 }}></span>
               </Link>
             </li>
-
             <li className="nav-item mx-1">
-              <Link className="nav-link px-3 py-2 position-relative" to="/contact">
+              <Link className="nav-link px-3 py-2 position-relative" to="/contact" style={{ fontSize: '1.1rem' }}>
                 <i className="bi bi-envelope me-1 d-lg-none"></i>
                 Contact
-                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{ 
-                  width: '0', 
-                  height: '2px', 
-                  transition: 'width 0.3s', 
-                  backgroundColor: '#f5f7f9' 
+                <span className="position-absolute bottom-0 start-50 translate-middle-x rounded-pill" style={{
+                  width: '0',
+                  height: '2px',
+                  transition: 'width 0.3s',
+                  backgroundColor: '#f5f7f9'
                 }}></span>
               </Link>
             </li>
           </ul>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 991.98px) {
+          .navbar-nav {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .navbar-brand {
+            margin-bottom: 0.5rem !important;
+          }
+          .nav-link {
+            font-size: 1.15rem !important;
+            padding: 0.75rem 1.25rem !important;
+          }
+        }
+      `}</style>
     </nav>
   );
 };

@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       setUser(loggedInUser);
       if (rememberMe) {
-        localStorage.setItem("user", JSON.stringify(loggedInUser));
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
         sessionStorage.removeItem("user");
       } else {
         sessionStorage.setItem("user", JSON.stringify(loggedInUser));

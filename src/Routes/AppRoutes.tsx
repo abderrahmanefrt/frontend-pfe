@@ -235,6 +235,17 @@ function AppRoutes() {
         }
       />
 
+      {/* Add route for /doctors */}
+      <Route
+        path="/doctors"
+        element={
+          <PrivateRoute
+            element={<DoctorSearchWithCalendar />}
+            allowedRoles={["user"]}
+          />
+        }
+      />
+
       {/* Fallback Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -127,32 +127,32 @@ const PatientProfile: React.FC = () => {
 
   return (
     <div className="container py-4" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3 flex-wrap">
-        <div className="d-flex align-items-center gap-3 flex-shrink-0">
+      <div className="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 gap-3">
+        <div className="d-flex align-items-center gap-3">
           <div className="rounded-circle d-flex justify-content-center align-items-center shadow"
             style={{
-              width: 64,
-              height: 64,
-              fontSize: '1.7rem',
+              width: 80,
+              height: 80,
+              fontSize: '2.2rem',
               background: 'var(--primary)',
               color: 'white',
               fontWeight: 700,
-              border: '3px solid var(--secondary)',
+              border: '4px solid var(--secondary)',
               boxShadow: '0 2px 12px rgba(70,130,180,0.10)'
             }}
           >
             {initials}
           </div>
           <div>
-            <h1 className="mb-1" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '1.3rem' }}>
+            <h1 className="mb-1" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '2rem' }}>
               {profile?.firstname} {profile?.lastname || "Guest"}
             </h1>
-            <div className="text-muted" style={{ fontSize: '0.95rem' }}>{profile?.email}</div>
+            <div className="text-muted" style={{ fontSize: '1rem' }}>{profile?.email}</div>
           </div>
         </div>
         <button
           onClick={() => navigate('/dashboard')}
-          className="btn w-100 w-md-auto mt-3 mt-md-0"
+          className="btn"
           style={{
             backgroundColor: 'var(--secondary)',
             color: 'var(--text)',
@@ -167,9 +167,9 @@ const PatientProfile: React.FC = () => {
         </button>
       </div>
 
-      <div className="row g-4 flex-column-reverse flex-md-row">
+      <div className="row g-4">
         {/* Left Column: Profile Information */}
-        <div className="col-12 col-md-4">
+        <div className="col-md-4">
           <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
             <div className="card-header border-0" style={{ 
               backgroundColor: 'var(--primary)',
@@ -327,17 +327,17 @@ const PatientProfile: React.FC = () => {
         </div>
 
         {/* Right Column: Appointment History */}
-        <div className="col-12 col-md-8">
+        <div className="col-md-8">
           <div
             className="card border-0 shadow-sm position-sticky"
-            style={{
-              top: "1rem",
+            style={{ 
+              top: "1rem", 
               zIndex: 10,
               borderRadius: '16px',
               minHeight: 320
             }}
           >
-            <div className="card-header border-0" style={{
+            <div className="card-header border-0" style={{ 
               backgroundColor: 'var(--accent)',
               color: 'white',
               borderRadius: '16px 16px 0 0',
@@ -356,7 +356,7 @@ const PatientProfile: React.FC = () => {
 
       {/* Settings Section */}
       <div className="card border-0 shadow-sm mt-4" style={{ borderRadius: '16px' }}>
-        <div className="card-header border-0" style={{
+        <div className="card-header border-0" style={{ 
           backgroundColor: 'var(--text)',
           color: 'white',
           borderRadius: '16px 16px 0 0',
@@ -371,19 +371,6 @@ const PatientProfile: React.FC = () => {
           <div className="text-muted">Settings and preferences coming soon.</div>
         </div>
       </div>
-      <style>{`
-        @media (max-width: 767.98px) {
-          .card-header, .card-body, .card {
-            border-radius: 12px !important;
-          }
-          .card {
-            margin-bottom: 1.5rem !important;
-          }
-          .btn {
-            font-size: 1rem !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };
