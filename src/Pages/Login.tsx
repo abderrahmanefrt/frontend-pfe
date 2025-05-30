@@ -17,7 +17,6 @@ const LoginForm: React.FC = () => {
       await login(email, password, rememberMe);
     } catch (err) {
       setPassword("");
-      setFormKey(k => k + 1);
       if (passwordRef.current) passwordRef.current.focus();
       alert("Login failed. Please check your credentials and try again.");
     }
