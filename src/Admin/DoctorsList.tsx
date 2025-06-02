@@ -89,7 +89,7 @@ const DoctorsList: React.FC = () => {
             <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
               <h3 className="m-0 font-weight-bold text-primary">
                 <i className="fas fa-user-md me-2"></i>
-                Accepted Doctors
+                All Doctors
               </h3>
               <button 
                 className="btn btn-primary" 

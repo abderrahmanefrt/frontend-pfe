@@ -143,8 +143,6 @@ const DoctorManagement = () => {
                 <p><strong>Specialty:</strong> {stripQuotes(selectedDoctor.specialite)}</p>
                 <p><strong>License Number:</strong> {stripQuotes(selectedDoctor.licenseNumber)}</p>
                 <p><strong>Address:</strong> {selectedDoctor.address}</p>
-                <p><strong>Latitude:</strong> {selectedDoctor.latitude}</p>
-                <p><strong>Longitude:</strong> {selectedDoctor.longitude}</p>
 
                 {/* Document */}
                 {selectedDoctor.document ? (

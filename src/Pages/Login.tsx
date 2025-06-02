@@ -101,13 +101,7 @@ const LoginForm: React.FC = () => {
                   Remember me
                 </label>
               </div>
-              <a 
-                href="/forgot-password" 
-                className="small text-decoration-none" 
-                style={{ color: '#4682B4' }}
-              >
-                Forgot password?
-              </a>
+              
             </div>
           </form>
 

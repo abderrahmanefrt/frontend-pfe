@@ -41,11 +41,7 @@ function Footer() {
                   <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Doctors
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/services" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
-                  <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> Services
-                </Link>
-              </li>
+            
               <li className="mb-2">
                 <Link to="/about" className="text-decoration-none hover-primary" style={{ color: '#f5f7f9', opacity: 0.75 }}>
                   <i className="bi bi-chevron-right me-1" style={{ color: '#4682B4' }}></i> About

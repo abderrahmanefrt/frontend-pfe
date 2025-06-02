@@ -183,7 +183,7 @@ const AdminDashboard: React.FC = () => {
             fontWeight: '500'
           }}
         >
-          View Accepted Doctors
+          View  Doctors
         </button>
         
         

@@ -7,7 +7,7 @@ import ScheduleAppointment from "./ScheduleAppointment";
 import MapModal from "../components/MapModal";
 import { Spinner, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faArrowLeft, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faArrowLeft, faMapMarkerAlt, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import Calendar from "react-calendar";
 import CreateAppointmentModal from "../components/CreateAppointmentModal";
 
@@ -40,6 +40,8 @@ const DoctorSearchWithCalendar: React.FC = () => {
   const [minRating, setMinRating] = useState(0);
   const [filterDate, setFilterDate] = useState<string | null>(null);
   const [filterTime, setFilterTime] = useState<string | null>(null);
+  const [searchDistance, setSearchDistance] = useState<number>(10);
+  const [showDistanceDropdown, setShowDistanceDropdown] = useState(false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -58,7 +60,7 @@ const DoctorSearchWithCalendar: React.FC = () => {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/nearMedecin`;
         params.append("latitude", locationCoords.lat.toString());
         params.append("longitude", locationCoords.lng.toString());
-        params.append("distance", "15");
+        params.append("distance", searchDistance.toString());
       } else {
         baseUrl = `${import.meta.env.VITE_API_URL}/api/medecin/SearchMedecin`;
         if (specialty) params.append("specialite", specialty);
@@ -267,6 +269,42 @@ const DoctorSearchWithCalendar: React.FC = () => {
               >
                 <FontAwesomeIcon icon={faMapMarkerAlt} />
               </button>
+              <div className="dropdown">
+                <button
+                  className="btn btn-outline-secondary"
+                  type="button"
+                  onClick={() => setShowDistanceDropdown(!showDistanceDropdown)}
+                  style={{ padding: '0.375rem 0.75rem' }}
+                >
+                  <FontAwesomeIcon icon={faChevronDown} />
+                </button>
+                {showDistanceDropdown && (
+                  <div className="dropdown-menu show" style={{ minWidth: '100px' }}>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => {
+                        setSearchDistance(10);
+                        setShowDistanceDropdown(false);
+                      }}
+                    >
+                      Default (10km)
+                    </button>
+                    <div className="dropdown-divider"></div>
+                    {[10, 20, 30, 40, 50, 100].map((distance) => (
+                      <button
+                        key={distance}
+                        className="dropdown-item"
+                        onClick={() => {
+                          setSearchDistance(distance);
+                          setShowDistanceDropdown(false);
+                        }}
+                      >
+                        {distance}km
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
               <div className="col-12 col-sm-6 col-md-4 col-lg-3">

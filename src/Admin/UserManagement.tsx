@@ -48,16 +48,41 @@ const PatientsList: React.FC = () => {
 
   const handleBlock = async (id: number) => {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}/block`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${user?.accessToken}`,
-        },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/users/${id}/block`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to block user");
       fetchPatients();
       setSelectedPatient(null);
     } catch (err) {
-      alert('Failed to block patient');
+      console.error(err);
+      alert("Blocking failed");
+    }
+  };
+
+  const handleUnblock = async (id: number) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/users/${id}/unblock`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${user?.accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to unblock user");
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (err) {
+      console.error(err);
+      alert("Unblocking failed");
     }
   };
 
@@ -105,9 +130,15 @@ const PatientsList: React.FC = () => {
                 <button className="btn btn-info btn-sm me-2" onClick={() => fetchPatientById(patient.id)}>
                   View
                 </button>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleBlock(patient.id)}>
-                  Block
-                </button>
+                {patient.status === 'banned' ? (
+                  <button className="btn btn-success btn-sm me-2" onClick={() => handleUnblock(patient.id)}>
+                    Unblock
+                  </button>
+                ) : (
+                  <button className="btn btn-danger btn-sm me-2" onClick={() => handleBlock(patient.id)}>
+                    Block
+                  </button>
+                )}
                 <button className="btn btn-danger btn-sm" onClick={() => handleDelete(patient.id)}>
                   Delete
                 </button>

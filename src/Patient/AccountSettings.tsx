@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form, Alert, Container } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
 
 interface AccountSettingsProps {
   onSettingsUpdate?: () => void;
@@ -28,18 +29,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ onSettingsUpdate }) =
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  const getAccessToken = () => {
-    const userData = localStorage.getItem("user");
-    if (!userData) return null;
-    try {
-      const user = JSON.parse(userData);
-      return user.accessToken;
-    } catch (err) {
-      console.error("Error parsing user data:", err);
-      return null;
-    }
-  };
+  const { user, getAccessToken } = useAuth();
 
   const handlePasswordUpdate = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
